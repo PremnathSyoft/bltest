@@ -20,11 +20,8 @@ export default function BookLesson() {
     termsAccepted: false
   });
 
-  // Duration options (15 minutes to 3 hours)
+  // Duration options (minimum 1 hour to 3 hours)
   const durationOptions = [
-    { value: '15', label: '15 minutes', minutes: 15 },
-    { value: '30', label: '30 minutes', minutes: 30 },
-    { value: '45', label: '45 minutes', minutes: 45 },
     { value: '60', label: '1 hour', minutes: 60 },
     { value: '90', label: '1.5 hours', minutes: 90 },
     { value: '120', label: '2 hours', minutes: 120 },
@@ -32,11 +29,11 @@ export default function BookLesson() {
     { value: '180', label: '3 hours', minutes: 180 }
   ];
 
-  // Generate next 5 days
-  const getNext5Days = () => {
+  // Generate next 3 weeks (21 days)
+  const getNext3Weeks = () => {
     const days = [];
     const today = new Date();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 21; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       days.push({
@@ -283,12 +280,12 @@ export default function BookLesson() {
                         <i className="ri-calendar-line mr-3 text-blue-600"></i>
                         Select Date
                       </h4>
-                      <div className="grid grid-cols-5 gap-4">
-                        {getNext5Days().map((day) => (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 max-h-96 overflow-y-auto">
+                        {getNext3Weeks().map((day) => (
                           <button
                             key={day.date}
                             onClick={() => setSelectedDate(day.date)}
-                            className={`relative p-6 border-2 rounded-2xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${
+                            className={`relative p-3 md:p-4 border-2 rounded-xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${
                               selectedDate === day.date
                                 ? 'border-blue-500 bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 shadow-xl scale-110'
                                 : 'border-gray-200 hover:border-blue-300 text-gray-700 hover:shadow-lg bg-white hover:bg-gradient-to-b hover:from-blue-50 hover:to-white'
@@ -323,7 +320,7 @@ export default function BookLesson() {
                           <i className="ri-time-line mr-3 text-blue-600"></i>
                           Choose Duration
                         </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                           {durationOptions.map((duration) => (
                             <button
                               key={duration.value}
