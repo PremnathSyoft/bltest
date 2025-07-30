@@ -7,13 +7,20 @@ import React, { useState, useEffect } from 'react';
 export default function Payment() {
   const [selectedCard, setSelectedCard] = useState('card1');
   const [showAddCard, setShowAddCard] = useState(false);
-  const [activeSession, setActiveSession] = useState(null);
+  const [activeSession, setActiveSession] = useState<Session | null>(null);
   const [sessionTime, setSessionTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [review, setReview] = useState({ rating: 5, comment: '' });
-
+  type Session = {
+    id: string;
+    instructor: string;
+    type: string;
+    startTime: Date;
+    hourlyRate: number;
+  };
+  
   const paymentMethods = [
     {
       id: 'card1',
@@ -96,7 +103,7 @@ export default function Payment() {
     setReview({ rating: 5, comment: '' });
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;

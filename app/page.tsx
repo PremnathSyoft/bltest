@@ -13,19 +13,22 @@ export default function Home() {
       title: 'Practice Sessions',
       description: 'Book practice driving sessions with experienced instructors to improve your skills',
       icon: 'ri-car-line',
-      features: ['Experienced Instructors', 'Flexible Timing', 'Your Own Vehicle', 'Pick-up Service']
+      features: ['Experienced Instructors', 'Flexible Timing', 'Your Own Vehicle', 'Pick-up Service'],
+      image: '/images/practice-sessions.jpg'
     },
     {
       title: 'Road Test Preparation',
       description: 'Get ready for your driving test with specialized preparation sessions',
       icon: 'ri-road-map-line', 
-      features: ['Test Route Practice', 'Expert Guidance', 'Confidence Building', 'Mock Tests']
+      features: ['Test Route Practice', 'Expert Guidance', 'Confidence Building', 'Mock Tests'],
+      image: '/images/road-test-preparation.jpg'
     },
     {
       title: 'Companion Learning',
       description: 'Learn with a friend or family member in a supportive environment',
       icon: 'ri-group-line',
-      features: ['Bring a Friend', 'Shared Experience', 'Cost Effective', 'Social Learning']
+      features: ['Bring a Friend', 'Shared Experience', 'Cost Effective', 'Social Learning'],
+      image: '/images/companion-learning.jpg'
     }
   ];
 
@@ -53,7 +56,7 @@ export default function Home() {
                 title={service.title}
                 description={service.description}
                 icon={service.icon}
-                features={service.features}
+                image={service.image}
               />
             ))}
           </div>

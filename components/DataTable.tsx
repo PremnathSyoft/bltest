@@ -46,13 +46,13 @@ export default function DataTable({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [columnWidths, setColumnWidths] = useState<{[key: string]: number}>({});
-  // const [resizing, setResizing] = useState<string | null>(null);
+  const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
+  const [resizing, setResizing] = useState<string | null>(null);
 
   // Filter and sort data
   const filteredData = data.filter(row => {
     if (!search) return true;
-    return columns.some(col => 
+    return columns.some(col =>
       String(row[col.key]).toLowerCase().includes(search.toLowerCase())
     );
   });
@@ -116,7 +116,7 @@ export default function DataTable({
           {title && (
             <h3 className="text-xl font-bold text-gray-900">{title}</h3>
           )}
-          
+
           <div className="flex flex-wrap items-center space-x-3 space-y-2 md:space-y-0">
             {/* Search */}
             {searchable && (
@@ -192,7 +192,7 @@ export default function DataTable({
                   />
                 </th>
               )}
-              
+
               {columns.map((column) => (
                 <th
                   key={column.key}
@@ -209,7 +209,7 @@ export default function DataTable({
                           <i className={`ri-arrow-down-s-line text-xs -mt-1 ${sortBy === column.key && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`}></i>
                         </div>
                       )}
-                      
+
                       {/* Resize handle */}
                       <div
                         className="w-1 h-6 bg-gray-300 opacity-0 group-hover:opacity-100 hover:bg-blue-500 cursor-col-resize transition-opacity"
@@ -217,18 +217,18 @@ export default function DataTable({
                           setResizing(column.key);
                           const startX = e.clientX;
                           const startWidth = columnWidths[column.key] || 150;
-                          
+
                           const handleMouseMove = (e: MouseEvent) => {
                             const newWidth = Math.max(100, startWidth + (e.clientX - startX));
                             handleColumnResize(column.key, newWidth);
                           };
-                          
+
                           const handleMouseUp = () => {
                             setResizing(null);
                             document.removeEventListener('mousemove', handleMouseMove);
                             document.removeEventListener('mouseup', handleMouseUp);
                           };
-                          
+
                           document.addEventListener('mousemove', handleMouseMove);
                           document.addEventListener('mouseup', handleMouseUp);
                         }}
@@ -237,13 +237,13 @@ export default function DataTable({
                   </div>
                 </th>
               ))}
-              
+
               <th className="w-24 px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          
+
           <tbody className="bg-white divide-y divide-gray-200">
             {paginatedData.map((row, index) => {
               const rowIndex = String(startIndex + index);
@@ -259,7 +259,7 @@ export default function DataTable({
                       />
                     </td>
                   )}
-                  
+
                   {columns.map((column) => (
                     <td
                       key={column.key}
@@ -269,7 +269,7 @@ export default function DataTable({
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </td>
                   ))}
-                  
+
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center space-x-2">
                       {onEdit && (
@@ -305,7 +305,7 @@ export default function DataTable({
           <div className="text-sm text-gray-700">
             Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedData.length)} of {sortedData.length} results
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -314,26 +314,25 @@ export default function DataTable({
             >
               <i className="ri-arrow-left-s-line"></i>
             </button>
-            
+
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const page = i + Math.max(1, currentPage - 2);
               if (page > totalPages) return null;
-              
+
               return (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
-                    currentPage === page
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-2 text-sm border rounded-lg transition-colors ${currentPage === page
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                    }`}
                 >
                   {page}
                 </button>
               );
             })}
-            
+
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
