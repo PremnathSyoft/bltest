@@ -14,7 +14,7 @@ export default function Profile() {
   ];
 
   return (
-    <DashboardLayout userType="customer" userName="John">
+    <DashboardLayout userType="customer" userName="Deepika">
       <div className="p-4 md:p-6">
         {/* Header */}
         <div className="mb-6">
@@ -46,7 +46,7 @@ export default function Profile() {
                   </button>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900">John Doe</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Deepika T</h3>
                   {/* <p className="text-gray-500">Premium Member</p> */}
                   {/* <div className="flex items-center mt-2"> */}
                     {/* <div className="flex items-center mr-4">
@@ -66,7 +66,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                   <input
                     type="text"
-                    defaultValue="John"
+                    defaultValue="Deepika"
                     disabled={!isEditing}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-gray-50"
                   />
@@ -75,7 +75,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                   <input
                     type="text"
-                    defaultValue="Doe"
+                    defaultValue="Tenela"
                     disabled={!isEditing}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-gray-50"
                   />
@@ -84,7 +84,7 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                   <input
                     type="email"
-                    defaultValue="john.doe@example.com"
+                    defaultValue="deepika@gmail.com"
                     disabled={!isEditing}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-gray-50"
                   />

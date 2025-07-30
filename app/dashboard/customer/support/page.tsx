@@ -61,7 +61,7 @@ export default function Support() {
   ];
 
   return (
-    <DashboardLayout userType="customer" userName="John">
+    <DashboardLayout userType="customer" userName="Deepika">
       <div className="p-4 md:p-6">
         {/* Header */}
         <div className="mb-6">

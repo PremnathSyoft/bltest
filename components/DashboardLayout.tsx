@@ -39,19 +39,19 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
         <div className="flex items-center justify-center h-16 bg-blue-600">
-        <Link href="/" className="flex items-center">
-          <Image
-  src="/bliss_drive.png"
-  alt="BlissDrive Logo"
-  className="h-10 w-auto"
-  width={0}
-  height={0}
-  sizes="(max-width: 768px) 120px, 140px"
-  priority
-/>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/bliss_drive.png"
+              alt="BlissDrive Logo"
+              className="h-10 w-auto"
+              width={0}
+              height={0}
+              sizes="(max-width: 768px) 120px, 140px"
+              priority
+            />
           </Link>
         </div>
-        
+
         <nav className="mt-8">
           {navItems.map((item, index) => (
             <Link
@@ -93,8 +93,8 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
                 <i className="ri-menu-line"></i>
               </div>
             </button>
-            
-            <div className="flex items-center space-x-4">
+
+            <div className="flex items-center space-x-4 ml-auto">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">Welcome back, {userName}</p>
                 <p className="text-xs text-gray-500 capitalize">{userType} Dashboard</p>
