@@ -6,6 +6,11 @@ import { useState } from 'react';
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
 
+  // Calculate max date (18 years ago from today)
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
   const userStats = [
     { label: 'Total Rides', value: '47', icon: 'ri-car-line' },
     { label: 'Member Since', value: '2023', icon: 'ri-calendar-line' },
@@ -49,11 +54,11 @@ export default function Profile() {
                   <h3 className="text-xl font-bold text-gray-900">Deepika T</h3>
                   {/* <p className="text-gray-500">Premium Member</p> */}
                   {/* <div className="flex items-center mt-2"> */}
-                    {/* <div className="flex items-center mr-4">
+                  {/* <div className="flex items-center mr-4">
                       <i className="ri-star-fill text-yellow-400 mr-1"></i>
                       <span className="text-sm text-gray-600">4.8 rating</span>
                     </div> */}
-                    {/* <div className="flex items-center">
+                  {/* <div className="flex items-center">
                       <i className="ri-shield-check-line text-green-500 mr-1"></i>
                       <span className="text-sm text-gray-600">Verified</span>
                     </div> */}
@@ -98,6 +103,16 @@ export default function Profile() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-gray-50"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                  <input
+                    type="date"
+                    defaultValue="1995-06-15"
+                    max={maxDateString}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:bg-gray-50"
+                  />
+                </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                   <input
@@ -113,7 +128,7 @@ export default function Profile() {
             {/* Preferences */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Preferences</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div>
@@ -125,7 +140,7 @@ export default function Profile() {
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div>
                     <h4 className="font-medium text-gray-900">SMS Notifications</h4>
@@ -136,7 +151,7 @@ export default function Profile() {
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                   <div>
                     <h4 className="font-medium text-gray-900">Email Updates</h4>
@@ -147,7 +162,7 @@ export default function Profile() {
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <h4 className="font-medium text-gray-900">Location Sharing</h4>
