@@ -38,10 +38,10 @@ export default function BookLesson() {
       date.setDate(today.getDate() + i);
       days.push({
         date: date.toISOString().split('T')[0],
-        display: date.toLocaleDateString('en-US', { 
+        display: date.toLocaleDateString('en-US', {
           weekday: 'short',
-          month: 'short', 
-          day: 'numeric' 
+          month: 'short',
+          day: 'numeric'
         }),
         isToday: i === 0
       });
@@ -52,19 +52,19 @@ export default function BookLesson() {
   // Generate time slots in grid format based on duration
   const generateTimeSlots = (date: string, duration: string) => {
     if (!duration) return [];
-    
+
     const slots = [];
     const startHour = 8;
     const endHour = 18;
     const durationMinutes = parseInt(duration);
     const slotInterval = 30; // 30-minute intervals
-    
+
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute = 0; minute < 60; minute += slotInterval) {
         // Check if slot fits within working hours
         const endTime = new Date(`2024-01-01T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
         endTime.setMinutes(endTime.getMinutes() + durationMinutes);
-        
+
         if (endTime.getHours() <= endHour) {
           const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
           const timeDisplay = new Date(`2024-01-01T${time}`).toLocaleTimeString('en-US', {
@@ -72,13 +72,13 @@ export default function BookLesson() {
             minute: '2-digit',
             hour12: true
           });
-          
+
           const endTimeDisplay = endTime.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true
           });
-          
+
           slots.push({
             id: `${date}-${time}`,
             startTime: timeDisplay,
@@ -156,17 +156,16 @@ export default function BookLesson() {
           {/* Progress Steps */}
           <div className="mb-10">
             <div className="flex items-center justify-center space-x-4 md:space-x-8">
-              {[ 
+              {[
                 { num: 1, label: 'Select Type & Slot', icon: 'ri-car-line' },
-                { num: 2, label: 'Pickup Location', icon: 'ri-map-pin-line' }, 
+                { num: 2, label: 'Pickup Location', icon: 'ri-map-pin-line' },
                 { num: 3, label: 'Confirm Booking', icon: 'ri-check-line' }
               ].map((stepItem, index) => (
                 <div key={stepItem.num} className="flex items-center">
-                  <div className={`relative w-14 h-14 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-500 ${
-                    step >= stepItem.num 
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-xl scale-110 animate-pulse' 
+                  <div className={`relative w-14 h-14 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-500 ${step >= stepItem.num
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-xl scale-110 animate-pulse'
                       : 'bg-white border-2 border-gray-200 text-gray-400 shadow-md'
-                  }`}>
+                    }`}>
                     {step > stepItem.num ? (
                       <i className="ri-check-line text-xl"></i>
                     ) : (
@@ -181,11 +180,10 @@ export default function BookLesson() {
                     <div className="text-sm font-bold">{stepItem.label}</div>
                   </div>
                   {index < 2 && (
-                    <div className={`w-16 md:w-24 h-1 mx-4 rounded-full transition-all duration-700 ${
-                      step > stepItem.num 
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600' 
+                    <div className={`w-16 md:w-24 h-1 mx-4 rounded-full transition-all duration-700 ${step > stepItem.num
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
                         : 'bg-gray-200'
-                    }`}></div>
+                      }`}></div>
                   )}
                 </div>
               ))}
@@ -204,11 +202,10 @@ export default function BookLesson() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div
                       onClick={() => setSelectedType('practice')}
-                      className={`group relative p-8 border-3 rounded-2xl cursor-pointer transition-all duration-500 hover:shadow-2xl transform hover:-translate-y-2 ${
-                        selectedType === 'practice'
+                      className={`group relative p-8 border-3 rounded-2xl cursor-pointer transition-all duration-500 hover:shadow-2xl transform hover:-translate-y-2 ${selectedType === 'practice'
                           ? 'border-blue-400 bg-gradient-to-br from-blue-50 via-white to-blue-100 shadow-2xl scale-105'
                           : 'border-gray-200 hover:border-blue-300 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-white'
-                      }`}
+                        }`}
                     >
                       <div className="absolute top-4 right-4">
                         {selectedType === 'practice' && (
@@ -217,19 +214,18 @@ export default function BookLesson() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="text-center mb-6">
-                        <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 ${
-                          selectedType === 'practice' 
-                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
+                        <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 ${selectedType === 'practice'
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
                             : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white group-hover:from-blue-400 group-hover:to-indigo-500'
-                        }`}>
+                          }`}>
                           <i className="ri-car-line text-3xl"></i>
                         </div>
                         <h4 className="font-bold text-xl text-gray-900 mb-2">Practice Sessions</h4>
                         <p className="text-gray-600 text-sm">Master your driving skills with expert guidance</p>
                       </div>
-                      
+
                       <div className="text-center border-t border-gray-100 pt-4">
                         <div className="text-4xl font-bold text-green-600 mb-1">$60</div>
                         <div className="text-sm text-gray-500 font-medium">per hour</div>
@@ -238,11 +234,10 @@ export default function BookLesson() {
 
                     <div
                       onClick={() => setSelectedType('roadtest')}
-                      className={`group relative p-8 border-3 rounded-2xl cursor-pointer transition-all duration-500 hover:shadow-2xl transform hover:-translate-y-2 ${
-                        selectedType === 'roadtest'
+                      className={`group relative p-8 border-3 rounded-2xl cursor-pointer transition-all duration-500 hover:shadow-2xl transform hover:-translate-y-2 ${selectedType === 'roadtest'
                           ? 'border-purple-400 bg-gradient-to-br from-purple-50 via-white to-purple-100 shadow-2xl scale-105'
                           : 'border-gray-200 hover:border-purple-300 bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-white'
-                      }`}
+                        }`}
                     >
                       <div className="absolute top-4 right-4">
                         {selectedType === 'roadtest' && (
@@ -251,19 +246,18 @@ export default function BookLesson() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="text-center mb-6">
-                        <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 ${
-                          selectedType === 'roadtest' 
-                            ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg' 
+                        <div className={`w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 ${selectedType === 'roadtest'
+                            ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg'
                             : 'bg-gradient-to-r from-purple-400 to-pink-500 text-white group-hover:from-purple-500 group-hover:to-pink-600'
-                        }`}>
+                          }`}>
                           <i className="ri-road-map-line text-3xl"></i>
                         </div>
                         <h4 className="font-bold text-xl text-gray-900 mb-2">Road Test Prep</h4>
                         <p className="text-gray-600 text-sm">Get ready for your driving test with confidence</p>
                       </div>
-                      
+
                       <div className="text-center border-t border-gray-100 pt-4">
                         <div className="text-4xl font-bold text-purple-600 mb-1">$98</div>
                         <div className="text-sm text-gray-500 font-medium">per hour</div>
@@ -285,11 +279,10 @@ export default function BookLesson() {
                           <button
                             key={day.date}
                             onClick={() => setSelectedDate(day.date)}
-                            className={`relative p-3 md:p-4 border-2 rounded-xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${
-                              selectedDate === day.date
+                            className={`relative p-3 md:p-4 border-2 rounded-xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${selectedDate === day.date
                                 ? 'border-blue-500 bg-gradient-to-b from-blue-50 to-blue-100 text-blue-700 shadow-xl scale-110'
                                 : 'border-gray-200 hover:border-blue-300 text-gray-700 hover:shadow-lg bg-white hover:bg-gradient-to-b hover:from-blue-50 hover:to-white'
-                            }`}
+                              }`}
                           >
                             {day.isToday && (
                               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
@@ -325,11 +318,10 @@ export default function BookLesson() {
                             <button
                               key={duration.value}
                               onClick={() => setSelectedDuration(duration.value)}
-                              className={`relative p-4 border-2 rounded-xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${
-                                selectedDuration === duration.value
+                              className={`relative p-4 border-2 rounded-xl text-center font-medium transition-all duration-300 transform hover:scale-105 ${selectedDuration === duration.value
                                   ? 'border-indigo-500 bg-gradient-to-b from-indigo-50 to-indigo-100 text-indigo-700 shadow-xl scale-105'
                                   : 'border-gray-200 hover:border-indigo-300 text-gray-700 hover:shadow-md bg-white'
-                              }`}
+                                }`}
                             >
                               <div className="text-lg font-bold">{duration.label}</div>
                               <div className="text-sm text-gray-500 mt-1">
@@ -345,7 +337,7 @@ export default function BookLesson() {
                             </button>
                           ))}
                         </div>
-                        
+
                         {selectedDuration && (
                           <div className="mt-4 text-center animate-fade-in">
                             <div className="inline-flex items-center bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-3 rounded-xl border border-green-200">
@@ -372,13 +364,12 @@ export default function BookLesson() {
                               key={slot.id}
                               onClick={() => slot.available && handleSlotSelect(slot.id)}
                               disabled={!slot.available}
-                              className={`relative p-4 border-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
-                                selectedSlot === slot.id
+                              className={`relative p-4 border-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${selectedSlot === slot.id
                                   ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-xl scale-105'
-                                  : slot.available 
+                                  : slot.available
                                     ? 'border-gray-200 hover:border-blue-300 text-gray-700 bg-white hover:shadow-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50'
                                     : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60'
-                              }`}
+                                }`}
                             >
                               <div className="font-bold text-base mb-1">{slot.startTime}</div>
                               <div className="text-xs opacity-80">to {slot.endTime}</div>
@@ -387,13 +378,13 @@ export default function BookLesson() {
                                   ({selectedDurationObj?.label})
                                 </div>
                               )}
-                              
+
                               {!slot.available && (
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <i className="ri-lock-line text-gray-400"></i>
                                 </div>
                               )}
-                              
+
                               {selectedSlot === slot.id && (
                                 <div className="absolute -top-1 -right-1">
                                   <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center animate-bounce">
@@ -421,7 +412,7 @@ export default function BookLesson() {
                             <div className="text-gray-700">
                               <div className="font-semibold mb-2">Terms & Conditions</div>
                               <p className="text-sm leading-relaxed">
-                                I agree to the <a href="#" className="text-blue-600 hover:underline font-medium">Terms & Conditions</a> and understand the cancellation policy. 
+                                I agree to the <a href="#" className="text-blue-600 hover:underline font-medium">Terms & Conditions</a> and understand the cancellation policy.
                                 I acknowledge that payment will be processed after the lesson based on actual duration.
                               </p>
                             </div>
@@ -463,23 +454,22 @@ export default function BookLesson() {
                   <i className="ri-map-pin-line mr-3 text-blue-600"></i>
                   Pickup Location
                 </h3>
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Address Selection */}
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-4">Choose Address</h4>
-                    
+
                     {/* Saved Addresses */}
                     <div className="space-y-4 mb-6">
                       {savedAddresses.map((address) => (
                         <div
                           key={address.id}
                           onClick={() => setSelectedAddress(address.id)}
-                          className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                            selectedAddress === address.id
+                          className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${selectedAddress === address.id
                               ? 'border-blue-500 bg-blue-50'
                               : 'border-gray-200 hover:border-blue-300'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-3">
@@ -492,14 +482,14 @@ export default function BookLesson() {
                               </div>
                             </div>
                             <div className="flex space-x-2">
-                              <button 
-                                onClick={(e) => {e.stopPropagation(); alert('Edit address');}}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); alert('Edit address'); }}
                                 className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                               >
                                 <i className="ri-edit-line"></i>
                               </button>
-                              <button 
-                                onClick={(e) => {e.stopPropagation(); deleteAddress(address.id);}}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteAddress(address.id); }}
                                 className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                               >
                                 <i className="ri-delete-bin-line"></i>
@@ -518,7 +508,7 @@ export default function BookLesson() {
                         </div>
                         <p className="text-sm font-medium text-gray-700">Add New Address</p>
                       </div>
-                      
+
                       <textarea
                         rows={3}
                         placeholder="Enter your pickup address..."
@@ -527,7 +517,7 @@ export default function BookLesson() {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
                         maxLength={500}
                       />
-                      
+
                       <button className="mt-3 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors">
                         <i className="ri-map-pin-add-line mr-2"></i>
                         Pin Location on Map
@@ -574,17 +564,17 @@ export default function BookLesson() {
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-4">Location Map</h4>
                     <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
-                      <iframe 
+                      <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.119763973046!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1642678000000!5m2!1sen!2s"
                         width="100%"
                         height="100%"
-                        style={{border:0}}
+                        style={{ border: 0 }}
                         allowFullScreen
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                       ></iframe>
                     </div>
-                    
+
                     {(selectedAddress || newAddress) && (
                       <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                         <div className="flex items-center">
@@ -626,7 +616,7 @@ export default function BookLesson() {
                   <i className="ri-check-line mr-3 text-blue-600"></i>
                   Confirm Your Booking
                 </h3>
-                
+
                 {/* Booking Summary */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-6 border border-blue-100">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -656,7 +646,7 @@ export default function BookLesson() {
                         <span className="font-bold text-green-600 text-lg">${estimatedPrice}</span>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div className="flex justify-between">
                         <span className="font-medium text-gray-700">Pickup:</span>
@@ -720,7 +710,7 @@ export default function BookLesson() {
           )}
         </div>
       </div>
-      
+
       <style jsx>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(30px); }
