@@ -11,6 +11,8 @@ export default function Payment() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [review, setReview] = useState({ rating: 5, comment: '' });
   type Session = {
     id: string;
@@ -19,8 +21,67 @@ export default function Payment() {
     startTime: Date;
     hourlyRate: number;
   };
-  
 
+  type Coupon = {
+    id: string;
+    code: string;
+    title: string;
+    description: string;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minAmount: number;
+    expiryDate: string;
+    isActive: boolean;
+  };
+
+
+
+  const availableCoupons: Coupon[] = [
+    {
+      id: 'COUP001',
+      code: 'FIRST10',
+      title: '10% Off First Session',
+      description: 'Get 10% discount on your first driving lesson',
+      discountType: 'percentage',
+      discountValue: 10,
+      minAmount: 0,
+      expiryDate: '2025-02-28',
+      isActive: true
+    },
+    {
+      id: 'COUP002',
+      code: 'SAVE20',
+      title: '$20 Off',
+      description: 'Save $20 on sessions over $100',
+      discountType: 'fixed',
+      discountValue: 20,
+      minAmount: 100,
+      expiryDate: '2025-01-31',
+      isActive: true
+    },
+    {
+      id: 'COUP003',
+      code: 'STUDENT15',
+      title: '15% Student Discount',
+      description: 'Special discount for students',
+      discountType: 'percentage',
+      discountValue: 15,
+      minAmount: 50,
+      expiryDate: '2025-03-15',
+      isActive: true
+    },
+    {
+      id: 'COUP004',
+      code: 'WEEKEND25',
+      title: '$25 Weekend Special',
+      description: 'Weekend sessions discount',
+      discountType: 'fixed',
+      discountValue: 25,
+      minAmount: 150,
+      expiryDate: '2025-02-15',
+      isActive: false
+    }
+  ];
 
   const transactions = [
     {
@@ -97,7 +158,56 @@ export default function Payment() {
   const calculateAmount = () => {
     if (!activeSession) return '0.00';
     const duration = sessionTime / 3600;
+    const baseAmount = duration * activeSession.hourlyRate;
+
+    if (appliedCoupon) {
+      if (baseAmount >= appliedCoupon.minAmount) {
+        if (appliedCoupon.discountType === 'percentage') {
+          const discount = (baseAmount * appliedCoupon.discountValue) / 100;
+          return (baseAmount - discount).toFixed(2);
+        } else {
+          return (baseAmount - appliedCoupon.discountValue).toFixed(2);
+        }
+      }
+    }
+
+    return baseAmount.toFixed(2);
+  };
+
+  const calculateDiscount = () => {
+    if (!activeSession || !appliedCoupon) return '0.00';
+    const duration = sessionTime / 3600;
+    const baseAmount = duration * activeSession.hourlyRate;
+
+    if (baseAmount >= appliedCoupon.minAmount) {
+      if (appliedCoupon.discountType === 'percentage') {
+        const discount = (baseAmount * appliedCoupon.discountValue) / 100;
+        return discount.toFixed(2);
+      } else {
+        return appliedCoupon.discountValue.toFixed(2);
+      }
+    }
+    return '0.00';
+  };
+
+  const getBaseAmount = () => {
+    if (!activeSession) return '0.00';
+    const duration = sessionTime / 3600;
     return (duration * activeSession.hourlyRate).toFixed(2);
+  };
+
+  const applyCoupon = (coupon: Coupon) => {
+    const baseAmount = parseFloat(getBaseAmount());
+    if (baseAmount >= coupon.minAmount) {
+      setAppliedCoupon(coupon);
+      setShowCouponModal(false);
+    } else {
+      alert(`Minimum amount of $${coupon.minAmount} required for this coupon`);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
   };
 
   // Timer effect
@@ -224,11 +334,52 @@ export default function Payment() {
                     <span className="text-sm text-gray-600">Rate:</span>
                     <span className="text-sm font-medium">${activeSession?.hourlyRate}/hour</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Subtotal:</span>
+                    <span className="text-sm font-medium">${getBaseAmount()}</span>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-600">
+                      <span className="text-sm">Discount ({appliedCoupon.code}):</span>
+                      <span className="text-sm font-medium">-${calculateDiscount()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-medium text-gray-900">Total Amount:</span>
                     <span className="font-bold text-lg text-green-600">${calculateAmount()}</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Coupon Section */}
+              <div className="mb-6">
+                {appliedCoupon ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <i className="ri-coupon-line text-green-600 mr-2"></i>
+                        <div>
+                          <p className="text-sm font-medium text-green-800">{appliedCoupon.title}</p>
+                          <p className="text-xs text-green-600">Code: {appliedCoupon.code}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={removeCoupon}
+                        className="text-green-600 hover:text-green-700 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowCouponModal(true)}
+                    className="w-full bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center"
+                  >
+                    <i className="ri-coupon-line mr-2"></i>
+                    Apply Coupon
+                  </button>
+                )}
               </div>
 
               <div className="flex space-x-3">
@@ -245,6 +396,98 @@ export default function Payment() {
                   Pay Now
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Coupon Modal */}
+        {showCouponModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">Available Coupons</h3>
+                <button
+                  onClick={() => setShowCouponModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <i className="ri-close-line text-2xl"></i>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {availableCoupons
+                  .filter(coupon => coupon.isActive)
+                  .map((coupon) => {
+                    const baseAmount = parseFloat(getBaseAmount());
+                    const isEligible = baseAmount >= coupon.minAmount;
+
+                    return (
+                      <div
+                        key={coupon.id}
+                        className={`border rounded-lg p-4 ${isEligible
+                            ? 'border-green-200 bg-green-50'
+                            : 'border-gray-200 bg-gray-50'
+                          }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="flex items-center mb-2">
+                              <i className="ri-coupon-line text-lg text-blue-600 mr-2"></i>
+                              <h4 className="font-semibold text-gray-900">{coupon.title}</h4>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{coupon.description}</p>
+                            <div className="flex items-center space-x-4 text-xs text-gray-500">
+                              <span>Code: <span className="font-mono font-medium">{coupon.code}</span></span>
+                              <span>Min: ${coupon.minAmount}</span>
+                              <span>Expires: {coupon.expiryDate}</span>
+                            </div>
+                          </div>
+                          <div className="text-right ml-4">
+                            <div className="text-lg font-bold text-green-600 mb-1">
+                              {coupon.discountType === 'percentage'
+                                ? `${coupon.discountValue}% OFF`
+                                : `$${coupon.discountValue} OFF`
+                              }
+                            </div>
+                            {isEligible ? (
+                              <button
+                                onClick={() => applyCoupon(coupon)}
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                Apply
+                              </button>
+                            ) : (
+                              <div className="text-xs text-gray-500">
+                                Need ${(coupon.minAmount - baseAmount).toFixed(2)} more
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {isEligible && (
+                          <div className="bg-white rounded p-2 text-xs">
+                            <div className="flex justify-between">
+                              <span>You&apos;ll save:</span>
+                              <span className="font-medium text-green-600">
+                                ${coupon.discountType === 'percentage'
+                                  ? ((baseAmount * coupon.discountValue) / 100).toFixed(2)
+                                  : coupon.discountValue.toFixed(2)
+                                }
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {availableCoupons.filter(coupon => coupon.isActive).length === 0 && (
+                <div className="text-center py-8">
+                  <i className="ri-coupon-line text-4xl text-gray-300 mb-4"></i>
+                  <p className="text-gray-500">No coupons available at the moment</p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -267,9 +510,8 @@ export default function Payment() {
                     <button
                       key={star}
                       onClick={() => setReview(prev => ({ ...prev, rating: star }))}
-                      className={`text-3xl transition-colors ${
-                        star <= review.rating ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
+                      className={`text-3xl transition-colors ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
                     >
                       <i className="ri-star-fill"></i>
                     </button>
