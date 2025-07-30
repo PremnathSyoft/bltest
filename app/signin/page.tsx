@@ -24,7 +24,7 @@ export default function SignIn() {
 
           <div className="text-center mt-8">
             <p className="text-gray-600">
-              Don't have an account? The system will automatically create one for you during sign-in.
+              Don&apos;t have an account? The system will automatically create one for you during sign-in.
             </p>
           </div>
         </div>

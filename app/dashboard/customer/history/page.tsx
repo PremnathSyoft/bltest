@@ -6,7 +6,23 @@ import { useState } from 'react';
 
 export default function BookingHistory() {
   const [filter, setFilter] = useState('all');
-
+  type Booking = {
+    id: string;
+    date: string;
+    time: string;
+    type: string;
+    instructor: string;
+    duration: string;
+    price: string;
+    status: string;
+    actualDuration: string | null;
+    actualAmount: string | null;
+    rating: number | null;
+    feedback: string | null;
+    pickupLocation: string;
+    paymentStatus: string;
+  };
+  
   const bookingHistory = [
     {
       id: 'BK001',
@@ -100,7 +116,7 @@ export default function BookingHistory() {
     return true;
   });
 
-  const renderStars = (rating) => {
+  const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <i
         key={i}
@@ -109,12 +125,12 @@ export default function BookingHistory() {
     ));
   };
 
-  const startSession = (booking) => {
+  const startSession = (booking: Booking) => {
     alert(`Starting session for booking ${booking.id}`);
     // Here you would redirect to the session timer page
   };
 
-  const makePayment = (booking) => {
+  const makePayment = (booking: Booking) => {
     alert(`Processing payment for booking ${booking.id}: ${booking.actualAmount || booking.price}`);
     // Here you would redirect to payment page
   };
@@ -285,7 +301,7 @@ export default function BookingHistory() {
                   {booking.feedback && (
                     <div>
                       <p className="text-sm font-medium text-gray-700 mb-1">Instructor Feedback:</p>
-                      <p className="text-sm text-gray-600 italic">"{booking.feedback}"</p>
+                      <p className="text-sm text-gray-600 italic">&quot;{booking.feedback}&quot;</p>
                     </div>
                   )}
                 </div>
@@ -299,7 +315,7 @@ export default function BookingHistory() {
                       <i className="ri-time-line text-yellow-600"></i>
                     </div>
                     <span className="text-sm font-medium text-yellow-800">
-                      Awaiting admin approval - You'll be notified once confirmed
+                      Awaiting admin approval - You&apos;ll be notified once confirmed
                     </span>
                   </div>
                 </div>

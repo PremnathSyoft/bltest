@@ -89,8 +89,8 @@ export default function CustomerDashboard() {
       <div className="p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, John!</h1>
-          <p className="text-gray-600">Ready for your next ride? Let's get you where you need to go.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Prema!</h1>
+          <p className="text-gray-600">Ready for your next ride? Let&apos;s get you where you need to go.</p>
         </div>
 
         {/* Current Ride Status */}

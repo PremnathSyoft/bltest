@@ -25,7 +25,7 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
 
   const customerNavItems = [
     { icon: 'ri-dashboard-line', label: 'Dashboard', href: '/dashboard/customer' },
-    { icon: 'ri-calendar-line', label: 'Book Lesson', href: '/dashboard/customer/book' },
+    { icon: 'ri-calendar-line', label: 'Book Slot', href: '/dashboard/customer/book' },
     { icon: 'ri-history-line', label: 'Booking History', href: '/dashboard/customer/history' },
     { icon: 'ri-credit-card-line', label: 'Payment', href: '/dashboard/customer/payment' },
     { icon: 'ri-user-line', label: 'Profile', href: '/dashboard/customer/profile' },

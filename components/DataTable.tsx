@@ -47,7 +47,7 @@ export default function DataTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<{[key: string]: number}>({});
-  const [resizing, setResizing] = useState<string | null>(null);
+  // const [resizing, setResizing] = useState<string | null>(null);
 
   // Filter and sort data
   const filteredData = data.filter(row => {

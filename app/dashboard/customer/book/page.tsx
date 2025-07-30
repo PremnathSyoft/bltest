@@ -686,7 +686,7 @@ export default function BookLesson() {
                         <li>Your booking will be submitted for admin approval</li>
                         <li>Once approved, you can start the session timer on the scheduled day</li>
                         <li>Payment will be processed based on actual lesson duration</li>
-                        <li>You'll be asked for a review after payment completion</li>
+                        <li>You&apos;ll be asked for a review after payment completion</li>
                       </ul>
                     </div>
                   </div>

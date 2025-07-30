@@ -2,7 +2,7 @@
 'use client';
 
 import DashboardLayout from '../../../../components/DashboardLayout';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Payment() {
   const [selectedCard, setSelectedCard] = useState('card1');
@@ -79,8 +79,8 @@ export default function Payment() {
   };
 
   const processPayment = () => {
-    const duration = sessionTime / 3600; // Convert to hours
-    const amount = (duration * (activeSession?.hourlyRate || 60)).toFixed(2);
+    // const duration = sessionTime / 3600; // Convert to hours
+    // const amount = (duration * (activeSession?.hourlyRate || 60)).toFixed(2);
 
     setShowPaymentModal(false);
     setTimeout(() => {
@@ -110,7 +110,7 @@ export default function Payment() {
   };
 
   // Timer effect
-  React.useEffect(() => {
+  useEffect(() => {
     let interval = null;
     if (isTimerRunning && activeSession) {
       interval = setInterval(() => {

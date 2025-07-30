@@ -67,14 +67,14 @@ export default function Home() {
             Ready to Start Your Driving Journey?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Book your first lesson today and take the first step towards becoming a confident driver
+            Book your first slot today and take the first step towards becoming a confident driver
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/signin"
               className="bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors whitespace-nowrap"
             >
-              Book Your Lesson
+              Book Your Slott
             </Link>
             <Link
               href="/about"

@@ -3,7 +3,7 @@
 
 import DashboardLayout from '../../../components/DashboardLayout';
 import DataTable from '../../../components/DataTable';
-import { SimpleAreaChart, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useState } from 'react';
 
 export default function AdminDashboard() {
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
       trend: [30, 25, 45, 55, 65, 60, 70, 75]
     },
     {
-      title: 'Today\'s Lessons',
+      title: 'Today\'s Slots',
       value: '186',
       change: '+15%',
       icon: 'ri-calendar-check-line',
@@ -373,18 +373,19 @@ export default function AdminDashboard() {
               
               {/* Mini Trend Chart */}
               <div className="h-12">
-                <ResponsiveContainer width="100%" height="100%">
-                  <SimpleAreaChart data={stat.trend.map((value, i) => ({ value }))}>
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke={`var(--${stat.color}-500)`}
-                      fill={`var(--${stat.color}-500)`}
-                      fillOpacity={0.3}
-                      strokeWidth={2}
-                    />
-                  </SimpleAreaChart>
-                </ResponsiveContainer>
+              <ResponsiveContainer width="100%" height="100%">
+  <AreaChart data={stat.trend.map((value) => ({ value }))}>
+    <Area 
+      type="monotone" 
+      dataKey="value" 
+      stroke={`var(--${stat.color}-500)`}
+      fill={`var(--${stat.color}-500)`}
+      fillOpacity={0.3}
+      strokeWidth={2}
+    />
+  </AreaChart>
+</ResponsiveContainer>
+
               </div>
             </div>
           ))}
@@ -430,7 +431,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <ResponsiveContainer width="100%" height={350}>
-                      <SimpleAreaChart data={revenueData}>
+                      <AreaChart data={revenueData}>
                         <defs>
                           <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
@@ -456,7 +457,7 @@ export default function AdminDashboard() {
                           fill="url(#colorRevenue)"
                           strokeWidth={3}
                         />
-                      </SimpleAreaChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   </div>
 
@@ -604,4 +605,3 @@ export default function AdminDashboard() {
     </DashboardLayout>
   );
 }
-</content>

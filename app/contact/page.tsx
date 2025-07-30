@@ -73,7 +73,7 @@ export default function Contact() {
             Contact Us
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            We're here to help. Reach out to us anytime for support, 
+            We&apos;re here to help. Reach out to us anytime for support, 
             questions, or feedback.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function Contact() {
               Get in Touch
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Choose the best way to reach us. We're available around the clock to assist you.
+              Choose the best way to reach us. We&apos;re available around the clock to assist you.
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export default function Contact() {
               </h2>
               <p className="text-lg text-gray-600 mb-8">
                 Have a specific question or feedback? Fill out the form below and 
-                we'll get back to you as soon as possible.
+                we&apos;ll get back to you as soon as possible.
               </p>
 
               <form id="contact-form" className="space-y-6">
@@ -208,7 +208,7 @@ export default function Contact() {
                 Our Location
               </h2>
               <p className="text-lg text-gray-600 mb-8">
-                Visit our headquarters or find us on the map. We're located in the heart 
+                Visit our headquarters or find us on the map. We&apos;re located in the heart 
                 of the business district with easy access and parking available.
               </p>
               
