@@ -47,7 +47,7 @@ export default function DataTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
-  const [resizing, setResizing] = useState<string | null>(null);
+
 
   // Filter and sort data
   const filteredData = data.filter(row => {
@@ -214,7 +214,6 @@ export default function DataTable({
                       <div
                         className="w-1 h-6 bg-gray-300 opacity-0 group-hover:opacity-100 hover:bg-blue-500 cursor-col-resize transition-opacity"
                         onMouseDown={(e) => {
-                          setResizing(column.key);
                           const startX = e.clientX;
                           const startWidth = columnWidths[column.key] || 150;
 
@@ -224,7 +223,6 @@ export default function DataTable({
                           };
 
                           const handleMouseUp = () => {
-                            setResizing(null);
                             document.removeEventListener('mousemove', handleMouseMove);
                             document.removeEventListener('mouseup', handleMouseUp);
                           };

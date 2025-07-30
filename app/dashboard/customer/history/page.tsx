@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 export default function BookingHistory() {
   const [filter, setFilter] = useState('all');
+
   type Booking = {
     id: string;
     date: string;
@@ -13,14 +14,14 @@ export default function BookingHistory() {
     type: string;
     instructor: string;
     duration: string;
-    price: string;
     status: string;
     actualDuration: string | null;
-    actualAmount: string | null;
     rating: number | null;
     feedback: string | null;
     pickupLocation: string;
     paymentStatus: string;
+    price: string;
+    actualAmount?: string;
   };
   
   const bookingHistory = [
@@ -31,14 +32,14 @@ export default function BookingHistory() {
       type: 'Practice Session',
       instructor: 'John Smith',
       duration: '2 hours',
-      price: '$120.00',
-      status: 'Approved',
+      status: 'Completed',
       actualDuration: '1h 45m',
-      actualAmount: '$105.00',
       rating: 5,
       feedback: 'Great progress on parallel parking and highway merging.',
       pickupLocation: '123 Main St, Downtown',
-      paymentStatus: 'Paid'
+      paymentStatus: 'Paid',
+      price: '$80',
+      actualAmount: '$70'
     },
     {
       id: 'BK002',
@@ -47,14 +48,14 @@ export default function BookingHistory() {
       type: 'Road Test Prep',
       instructor: 'Sarah Johnson',
       duration: '2.5 hours',
-      price: '$245.00',
-      status: 'Approved',
+      status: 'Completed',
       actualDuration: '2h 20m',
-      actualAmount: '$228.67',
       rating: 5,
       feedback: 'Ready for road test! Excellent improvement in confidence.',
       pickupLocation: '456 Oak Ave, Suburbs',
-      paymentStatus: 'Paid'
+      paymentStatus: 'Paid',
+      price: '$100',
+      actualAmount: '$93'
     },
     {
       id: 'BK003',
@@ -63,14 +64,14 @@ export default function BookingHistory() {
       type: 'Practice Session',
       instructor: 'Mike Wilson',
       duration: '1 hour',
-      price: '$60.00',
-      status: 'Approved',
+      status: 'Completed',
       actualDuration: '55m',
-      actualAmount: '$55.00',
       rating: 4,
       feedback: 'Good work on basic maneuvers. Need more practice with reversing.',
       pickupLocation: '789 Pine Rd, Uptown',
-      paymentStatus: 'Paid'
+      paymentStatus: 'Paid',
+      price: '$40',
+      actualAmount: '$37'
     },
     {
       id: 'BK004',
@@ -79,14 +80,13 @@ export default function BookingHistory() {
       type: 'Practice Session',
       instructor: 'Lisa Brown',
       duration: '2 hours',
-      price: '$120.00',
       status: 'Approved',
       actualDuration: null,
-      actualAmount: null,
       rating: null,
       feedback: null,
       pickupLocation: '321 Elm St, Midtown',
-      paymentStatus: 'Pending'
+      paymentStatus: 'Pending',
+      price: '$80'
     },
     {
       id: 'BK005',
@@ -95,14 +95,13 @@ export default function BookingHistory() {
       type: 'Road Test Prep',
       instructor: 'Tom Davis',
       duration: '2 hours',
-      price: '$196.00',
       status: 'Pending Approval',
       actualDuration: null,
-      actualAmount: null,
       rating: null,
       feedback: null,
       pickupLocation: '654 Maple Ave, Eastside',
-      paymentStatus: 'Not Started'
+      paymentStatus: 'Not Required',
+      price: '$80'
     }
   ];
 
