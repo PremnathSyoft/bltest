@@ -3,6 +3,41 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
+// Add custom styles for animations
+const customStyles = `
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+  }
+  
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-1000 { animation-delay: 1000ms; }
+`;
+
 export default function DriveWithUs() {
   const benefits = [
     {
@@ -66,28 +101,60 @@ export default function DriveWithUs() {
 
   return (
     <div className="min-h-screen">
+      <style jsx>{customStyles}</style>
       <Header />
       
-      <section 
-        className="relative py-24 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/DriveWithUs2.jpg')`
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Drive With BlissDrive
-          </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8">
-            Turn your car into a money-making opportunity. Join thousands of drivers 
-            earning flexible income on their own terms.
-          </p>
-          <a 
-            href="#apply" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors whitespace-nowrap cursor-pointer inline-block"
-          >
-            Start Your Application
-          </a>
+      <section className="relative py-32 overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+        
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-white/20 rounded-full animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            ></div>
+          ))}
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <div className="animate-fade-in-up">
+            <h1 className="text-5xl md:text-7xl font-black mb-8 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+              Drive With BlissDrive
+            </h1>
+            <p className="text-xl md:text-2xl max-w-4xl mx-auto text-gray-200 leading-relaxed mb-10 animate-fade-in-up delay-300">
+              Turn your car into a 
+              <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold"> money-making opportunity</span>. 
+              Join thousands of drivers earning flexible income on their own terms.
+            </p>
+            <a 
+              href="#apply" 
+              className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-bold transition-all duration-300 whitespace-nowrap cursor-pointer inline-block shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-105 animate-fade-in-up delay-500"
+            >
+              <span className="flex items-center justify-center">
+                Start Your Application
+                <i className="ri-arrow-right-line ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+              </span>
+            </a>
+          </div>
+          
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -102,14 +169,29 @@ export default function DriveWithUs() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
-              <div key={index} className="text-center bg-white p-6 rounded-xl shadow-lg">
-                <div className="w-16 h-16 flex items-center justify-center bg-blue-100 rounded-full mx-auto mb-4">
-                  <i className={`${benefit.icon} text-3xl text-blue-600`}></i>
+              <div
+                key={index}
+                className="group bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-white/50 h-full flex flex-col relative overflow-hidden animate-fade-in-up"
+                style={{ animationDelay: `${600 + index * 100}ms` }}
+              >
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                
+                <div className="relative z-10 text-center">
+                  <div className="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600 rounded-3xl mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl group-hover:shadow-2xl">
+                    <i className={`${benefit.icon} text-3xl text-white group-hover:scale-110 transition-transform duration-300`}></i>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all duration-300">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed flex-1 group-hover:text-gray-700 transition-colors duration-300">
+                      {benefit.description}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
               </div>
             ))}
           </div>
