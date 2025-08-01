@@ -23,9 +23,29 @@ export interface SigninData {
 }
 
 export interface AuthResponse {
-  access_token: string
-  refresh_token: string
-  user: any
+  status: number
+  message: string
+  data: {
+    access_token: string
+    refresh_token: string
+    user_id: string
+    email: string
+    first_name: string
+    last_name: string
+    role: string
+  }
+}
+
+export interface EmailCheckResponse {
+  status: number
+  message: string
+  data?: {
+    email: string
+    verification_status: string
+    role: string
+    first_name?: string
+    last_name?: string
+  }
 }
 
 export function useSignup(userType: string) {
@@ -52,6 +72,6 @@ export function useRefreshToken() {
 export function useEmailCheck(userType: string) {
   return useMutation({
     mutationFn: (email: string) =>
-      apiClient.get(`/api/email_check/${userType}?email=${email}`),
+      apiClient.get<EmailCheckResponse>(`/api/email_check/${userType}?email=${email}`),
   })
 }

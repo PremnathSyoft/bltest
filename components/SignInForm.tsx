@@ -40,7 +40,7 @@ export default function SignInForm() {
   const checkEmail = async (emailAddress: string) => {
     try {
       setErrorMessage(''); // Clear any previous errors
-      const result = await emailCheckMutation.mutateAsync(emailAddress) as any;
+      const result = await emailCheckMutation.mutateAsync(emailAddress);
 
       // Handle the new response format: {"status": 200, "message": "Email present", "data": {...}}
       if (result && result.status === 200 && result.data) {

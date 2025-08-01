@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSignin } from '@/lib/hooks'
+import { useSignin } from '@/lib/hooks/useAuth'
 import { useAuth } from '@/lib/auth-context'
 import { useToast } from '@/components/Toast'
 
@@ -27,11 +27,32 @@ export default function LoginPage() {
     try {
       const response = await signin.mutateAsync({ email, password })
       
-      // Assuming the API returns { access_token, refresh_token, user }
-      login(response.access_token, response.refresh_token, response.user)
-      
-      showToast('Login successful!', 'success')
-      router.push('/dashboard/customer')
+      // Handle the new response format: {status: 200, message: "Signin successful", data: {...}}
+      if (response && response.status === 200 && response.data) {
+        const { access_token, refresh_token, user_id, email: userEmail, first_name, last_name, role } = response.data;
+        
+        // Create user object for auth context
+        const userData = {
+          id: user_id,
+          email: userEmail,
+          first_name: first_name,
+          last_name: last_name,
+          role: role
+        };
+        
+        login(access_token, refresh_token, userData)
+        
+        showToast('Login successful!', 'success')
+        
+        // Redirect based on user role
+        if (role === 'SuperAdmin') {
+          router.push('/dashboard/admin')
+        } else {
+          router.push('/dashboard/customer')
+        }
+      } else {
+        showToast('Invalid response from server. Please try again.', 'error')
+      }
     } catch (error) {
       showToast('Login failed. Please check your credentials.', 'error')
       console.error('Login error:', error)
