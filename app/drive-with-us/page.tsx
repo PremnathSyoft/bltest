@@ -71,7 +71,7 @@ export default function DriveWithUs() {
       <section 
         className="relative py-24 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://readdy.ai/api/search-image?query=Happy%20professional%20rideshare%20driver%20in%20car%20holding%20smartphone%20with%20driver%20app%2C%20smiling%20person%20behind%20steering%20wheel%20of%20clean%20modern%20vehicle%2C%20successful%20transportation%20entrepreneur%20earning%20money&width=1920&height=800&seq=drive-hero-001&orientation=landscape')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/DriveWithUs2.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -141,7 +141,7 @@ export default function DriveWithUs() {
             <div 
               className="h-96 bg-cover bg-center bg-no-repeat rounded-xl shadow-lg"
               style={{
-                backgroundImage: `url('https://readdy.ai/api/search-image?query=Professional%20rideshare%20driver%20checking%20vehicle%20documents%20and%20smartphone%20app%2C%20person%20reviewing%20driver%20requirements%20and%20safety%20checklist%2C%20modern%20car%20interior%20with%20paperwork%20and%20mobile%20technology&width=600&height=400&seq=requirements-001&orientation=landscape')`
+                backgroundImage: `url('/images/DriveWithUs.jpg')`
               }}
             >
             </div>

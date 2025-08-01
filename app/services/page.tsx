@@ -10,37 +10,37 @@ export default function Services() {
       icon: 'ri-car-line',
       title: 'Standard Ride',
       description: 'Affordable and comfortable rides for everyday travel. Perfect for daily commutes and regular trips around the city.',
-      image: 'https://readdy.ai/api/search-image?query=Clean%20modern%20sedan%20car%20for%20rideshare%20service%2C%20professional%20transportation%20vehicle%20on%20clean%20white%20background%2C%20well-maintained%20family%20car%20with%20comfortable%20interior%2C%20contemporary%20automotive%20design%20for%20urban%20mobility&width=400&height=300&seq=std-ride-001&orientation=landscape'
+      image: '/images/Standard Ride.jpg'
     },
     {
       icon: 'ri-vip-crown-line',
       title: 'Premium Ride',
       description: 'Luxury vehicles with premium amenities for business travel and special occasions. Experience comfort and style.',
-      image: 'https://readdy.ai/api/search-image?query=Luxury%20premium%20black%20car%20for%20executive%20rideshare%20service%2C%20elegant%20sedan%20with%20leather%20interior%2C%20high-end%20transportation%20vehicle%20on%20pristine%20background%2C%20professional%20chauffeur%20service%20automobile&width=400&height=300&seq=premium-ride-001&orientation=landscape'
+      image: '/images/Premium Ride.jpg'
     },
     {
       icon: 'ri-group-line',
       title: 'Group Ride',
       description: 'Spacious vehicles perfect for families and groups. Travel together comfortably with ample space for everyone.',
-      image: 'https://readdy.ai/api/search-image?query=Large%20SUV%20or%20minivan%20for%20group%20transportation%2C%20family-friendly%20vehicle%20with%20multiple%20seats%2C%20spacious%20interior%20for%20group%20rideshare%20service%2C%20modern%20multi-passenger%20vehicle%20on%20clean%20background&width=400&height=300&seq=group-ride-001&orientation=landscape'
+      image: '/images/Group Ride.jpg'
     },
     {
       icon: 'ri-wheelchair-line',
       title: 'Accessible Ride',
       description: 'Wheelchair accessible vehicles with trained drivers to ensure safe and comfortable transportation for all.',
-      image: 'https://readdy.ai/api/search-image?query=Wheelchair%20accessible%20vehicle%20for%20disabled%20passengers%2C%20medical%20transport%20van%20with%20ramp%20and%20accessibility%20features%2C%20professional%20healthcare%20transportation%20on%20clean%20background%2C%20inclusive%20mobility%20service&width=400&height=300&seq=accessible-ride-001&orientation=landscape'
+      image: '/images/Accessible Ride.jpg'
     },
     {
       icon: 'ri-truck-line',
       title: 'Delivery Service',
       description: 'Fast and reliable delivery service for packages and goods. Track your deliveries in real-time.',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20delivery%20van%20for%20package%20transport%20service%2C%20clean%20white%20commercial%20vehicle%20with%20cargo%20space%2C%20modern%20logistics%20transportation%20on%20pristine%20background%2C%20courier%20service%20vehicle&width=400&height=300&seq=delivery-001&orientation=landscape'
+      image: '/images/Delivery Service.jpg'
     },
     {
       icon: 'ri-plane-line',
       title: 'Airport Transfer',
       description: 'Reliable airport transfers with flight tracking and professional drivers. Never miss your flight again.',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20airport%20transfer%20sedan%20at%20modern%20airport%20terminal%2C%20luxury%20car%20for%20business%20travel%20with%20airport%20background%2C%20premium%20transportation%20service%20vehicle%20with%20luggage%20space&width=400&height=300&seq=airport-001&orientation=landscape'
+      image: '/images/Airport Transfer.jpg'
     }
   ];
 
@@ -74,7 +74,7 @@ export default function Services() {
       <section 
         className="relative py-24 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://readdy.ai/api/search-image?query=Modern%20city%20transportation%20hub%20with%20various%20vehicles%20including%20cars%20taxis%20and%20ride-share%20vehicles%2C%20urban%20mobility%20center%20with%20clean%20roads%20and%20professional%20transportation%20services%2C%20bright%20daylight%20scene&width=1920&height=800&seq=services-hero-001&orientation=landscape')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/OurServices.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">

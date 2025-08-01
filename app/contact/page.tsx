@@ -65,7 +65,7 @@ export default function Contact() {
       <section 
         className="relative py-24 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://readdy.ai/api/search-image?query=Modern%20customer%20service%20center%20with%20friendly%20support%20staff%20helping%20customers%2C%20professional%20call%20center%20environment%20with%20computers%20and%20headsets%2C%20contemporary%20office%20space%20with%20customer%20support%20team&width=1920&height=800&seq=contact-hero-001&orientation=landscape')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/ContactUs.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">

@@ -15,22 +15,22 @@ export default function About() {
     {
       name: 'Sarah Johnson',
       role: 'CEO & Founder',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20business%20woman%20CEO%20in%20modern%20office%20setting%2C%20confident%20female%20executive%20in%20business%20attire%2C%20corporate%20leadership%20portrait%20with%20clean%20background%2C%20contemporary%20professional%20headshot&width=300&height=400&seq=team-001&orientation=portrait'
+      image: '/images/DummyHuman.jpg'
     },
     {
       name: 'Michael Chen',
       role: 'CTO',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20technology%20executive%20male%20CTO%20in%20modern%20office%2C%20confident%20tech%20leader%20in%20business%20casual%20attire%2C%20corporate%20technology%20portrait%20with%20clean%20background%2C%20contemporary%20professional%20headshot&width=300&height=400&seq=team-002&orientation=portrait'
+      image: '/images/DummyHuman.jpg'
     },
     {
       name: 'Emily Rodriguez',
       role: 'Head of Operations',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20business%20woman%20operations%20manager%20in%20modern%20office%2C%20confident%20female%20executive%20in%20professional%20attire%2C%20corporate%20operations%20portrait%20with%20clean%20background%2C%20contemporary%20professional%20headshot&width=300&height=400&seq=team-003&orientation=portrait'
+      image: '/images/DummyHuman.jpg'
     },
     {
       name: 'David Kim',
       role: 'Head of Safety',
-      image: 'https://readdy.ai/api/search-image?query=Professional%20safety%20manager%20male%20executive%20in%20modern%20office%20setting%2C%20confident%20business%20leader%20in%20professional%20attire%2C%20corporate%20safety%20portrait%20with%20clean%20background%2C%20contemporary%20professional%20headshot&width=300&height=400&seq=team-004&orientation=portrait'
+      image: '/images/DummyHuman.jpg'
     }
   ];
 
@@ -41,7 +41,7 @@ export default function About() {
       <section 
         className="relative py-24 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://readdy.ai/api/search-image?query=Modern%20corporate%20office%20building%20with%20glass%20facade%20and%20professional%20business%20environment%2C%20contemporary%20architecture%20with%20clean%20lines%20and%20urban%20setting%2C%20bright%20daylight%20corporate%20headquarters%20exterior&width=1920&height=800&seq=about-hero-001&orientation=landscape')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/AboutUs2.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -87,7 +87,7 @@ export default function About() {
             </div>
             <div className="h-96 bg-cover bg-center bg-no-repeat rounded-xl shadow-lg"
               style={{
-                backgroundImage: `url('https://readdy.ai/api/search-image?query=Modern%20rideshare%20team%20working%20together%20in%20bright%20office%20space%2C%20diverse%20group%20of%20professionals%20collaborating%20on%20transportation%20technology%2C%20contemporary%20workplace%20with%20laptops%20and%20modern%20furniture%2C%20teamwork%20and%20innovation&width=600&height=400&seq=mission-001&orientation=landscape')`
+                backgroundImage: `url('/images/AboutUs.jpg')`
               }}>
             </div>
           </div>
