@@ -128,7 +128,7 @@ export default function Contact() {
               Contact Us
             </h1>
             <p className="text-xl md:text-2xl max-w-4xl mx-auto text-gray-200 leading-relaxed animate-fade-in-up delay-300">
-              We're here to help. Reach out to us anytime for 
+              We&apos;re here to help. Reach out to us anytime for 
               <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold"> support, questions, or feedback</span>
             </p>
           </div>

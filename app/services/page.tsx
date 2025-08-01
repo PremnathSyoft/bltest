@@ -4,46 +4,6 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ServiceCard from '../../components/ServiceCard';
 
-// Add custom styles for animations
-const customStyles = `
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-10px) rotate(1deg); }
-    66% { transform: translateY(5px) rotate(-1deg); }
-  }
-  
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out forwards;
-    opacity: 0;
-  }
-  
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
-  .delay-400 { animation-delay: 400ms; }
-  .delay-500 { animation-delay: 500ms; }
-  .delay-1000 { animation-delay: 1000ms; }
-  
-  .bg-grid-pattern {
-    background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0);
-    background-size: 20px 20px;
-  }
-`;
-
 export default function Services() {
   const services = [
     {
