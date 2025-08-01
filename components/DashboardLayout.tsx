@@ -3,6 +3,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import BottomNavigation from './BottomNavigation';
 import Image from 'next/image';
 interface DashboardLayoutProps {
@@ -13,6 +15,13 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, userType, userName }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/signin');
+  };
 
   const adminNavItems = [
     { icon: 'ri-dashboard-line', label: 'Dashboard', href: '/dashboard/admin' },
@@ -68,15 +77,15 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
         </nav>
 
         <div className="absolute bottom-0 w-full p-6">
-          <Link
-            href="/signin"
-            className="flex items-center text-gray-700 hover:text-red-600 transition-colors cursor-pointer"
+          <button
+            onClick={handleLogout}
+            className="flex items-center text-gray-700 hover:text-red-600 transition-colors cursor-pointer w-full text-left"
           >
             <div className="w-6 h-6 flex items-center justify-center mr-3">
               <i className="ri-logout-circle-line"></i>
             </div>
             Sign Out
-          </Link>
+          </button>
         </div>
       </div>
 

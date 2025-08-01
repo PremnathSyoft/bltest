@@ -2,8 +2,10 @@
 
 import DashboardLayout from '../../../components/DashboardLayout';
 import Link from 'next/link';
+// import { useAuth } from '@/lib/auth-context';
 
 export default function CustomerDashboard() {
+  // const { user } = useAuth();
   const quickActions = [
     {
       title: 'Book a Ride',

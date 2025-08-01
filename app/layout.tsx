@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/components/QueryProvider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/components/Toast";
+import AuthGuard from "@/components/AuthGuard";
 
 const pacifico = Pacifico({
   weight: '400',
@@ -40,7 +41,9 @@ export default function RootLayout({
         <AuthProvider>
           <QueryProvider>
             <ToastProvider>
-              {children}
+              <AuthGuard>
+                {children}
+              </AuthGuard>
             </ToastProvider>
           </QueryProvider>
         </AuthProvider>

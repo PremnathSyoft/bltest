@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEmailCheck } from '@/lib/hooks/useAuth';
+import { useEmailCheck, useSignup, useSignin, type SignupData, type SigninData } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/auth-context';
 
 export default function SignInForm() {
   const [step, setStep] = useState('email');
@@ -30,30 +31,36 @@ export default function SignInForm() {
     confirm: false
   });
   const router = useRouter();
+  const { login } = useAuth();
   const emailCheckMutation = useEmailCheck('customer'); // Default to customer type for email check
+  const signupMutation = useSignup('customer'); // Default to customer signup
+  const customerSigninMutation = useSignin('customer');
+  const adminSigninMutation = useSignin('superadmin');
 
   const checkEmail = async (emailAddress: string) => {
     try {
       setErrorMessage(''); // Clear any previous errors
       const result = await emailCheckMutation.mutateAsync(emailAddress) as any;
 
-      // Only proceed if we get a successful response
-      if (result && typeof result === 'object') {
-        if (result.exists) {
-          setUserType(result.user_type || 'Customer');
-          setStep('password');
-          // Pre-fill user data if available
-          if (result.first_name && result.last_name) {
-            setFormData(prev => ({
-              ...prev,
-              firstName: result.first_name || '',
-              lastName: result.last_name || ''
-            }));
-          }
-        } else {
-          setUserType('Customer');
-          setStep('register');
+      // Handle the new response format: {"status": 200, "message": "Email present", "data": {...}}
+      if (result && result.status === 200 && result.data) {
+        // Email exists - go to password step
+        const userData = result.data;
+        setUserType(userData.role || 'Customer');
+        setStep('password');
+        
+        // Pre-fill user data if available
+        if (userData.first_name && userData.last_name) {
+          setFormData(prev => ({
+            ...prev,
+            firstName: userData.first_name || '',
+            lastName: userData.last_name || ''
+          }));
         }
+      } else if (result && result.status === 200 && result.message === "Email not found") {
+        // Email doesn't exist - go to registration
+        setUserType('Customer');
+        setStep('register');
       } else {
         setErrorMessage('Something went wrong. Please try again.');
         setStep('error');
@@ -88,19 +95,75 @@ export default function SignInForm() {
     }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password.trim()) {
-      // Redirect based on user type
-      if (userType === 'SuperAdmin') {
-        router.push('/dashboard/admin');
-      } else {
-        router.push('/dashboard/customer');
+      try {
+        // Prepare signin data
+        const signinData: SigninData = {
+          email: email,
+          password: formData.password
+        };
+
+        // Choose the correct signin mutation based on user type
+        const signinMutation = userType === 'SuperAdmin' ? adminSigninMutation : customerSigninMutation;
+        
+        // Call the signin API
+        const result = await signinMutation.mutateAsync(signinData);
+        
+        // Handle the new response format: {status: 200, message: "Signin successful", data: {...}}
+        if (result && result.status === 200 && result.data) {
+          const { access_token, refresh_token, user_id, email, first_name, last_name, role } = result.data;
+          
+          // Create user object for auth context
+          const userData = {
+            id: user_id,
+            email: email,
+            first_name: first_name,
+            last_name: last_name,
+            role: role
+          };
+          
+          // Update auth context with user data
+          login(access_token, refresh_token, userData);
+
+          // Check for redirect URL from session storage
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            router.push(redirectUrl);
+          } else {
+            // Redirect based on user type
+            if (role === 'SuperAdmin') {
+              router.push('/dashboard/admin');
+            } else {
+              router.push('/dashboard/customer');
+            }
+          }
+        } else {
+          setErrorMessage('Invalid response from server. Please try again.');
+          setStep('error');
+        }
+      } catch (error: any) {
+        console.error('Signin failed:', error);
+        
+        // Handle signin errors
+        if (error?.message?.includes('401') || error?.status === 401) {
+          setErrorMessage('Invalid email or password. Please try again.');
+        } else if (error?.message?.includes('404') || error?.status === 404) {
+          setErrorMessage('Account not found. Please check your email or sign up.');
+        } else if (error?.message?.includes('500') || error?.status === 500) {
+          setErrorMessage('Something went wrong on our end. Please try again later.');
+        } else {
+          setErrorMessage('Failed to sign in. Please try again.');
+        }
+        
+        setStep('error');
       }
     }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate all required fields
@@ -129,8 +192,66 @@ export default function SignInForm() {
       !passwordError &&
       !confirmPasswordError
     ) {
-      // Redirect to customer dashboard
-      router.push('/dashboard/customer');
+      try {
+        // Prepare signup data according to the SignupData interface
+        const signupData: SignupData = {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          date_of_birth: formData.dateOfBirth,
+          mobile_number: formData.phoneNumber.replace(/\D/g, ''), // Remove formatting for API
+          email: email,
+          password: formData.password,
+          terms_accepted: formData.agreeToTerms
+        };
+
+        // Call the signup API
+        const result = await signupMutation.mutateAsync(signupData);
+        
+        // Handle the new response format: {status: 200, message: "Signup successful", data: {...}}
+        if (result && result.status === 200 && result.data) {
+          const { access_token, refresh_token, user_id, email, first_name, last_name, role } = result.data;
+          
+          // Create user object for auth context
+          const userData = {
+            id: user_id,
+            email: email,
+            first_name: first_name,
+            last_name: last_name,
+            role: role || 'Customer'
+          };
+          
+          // Update auth context with user data
+          login(access_token, refresh_token, userData);
+
+          // Check for redirect URL from session storage
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            router.push(redirectUrl);
+          } else {
+            // Redirect to customer dashboard
+            router.push('/dashboard/customer');
+          }
+        } else {
+          setErrorMessage('Invalid response from server. Please try again.');
+          setStep('error');
+        }
+      } catch (error: any) {
+        console.error('Signup failed:', error);
+        
+        // Handle signup errors
+        if (error?.message?.includes('409') || error?.status === 409) {
+          setErrorMessage('An account with this email already exists. Please try signing in instead.');
+        } else if (error?.message?.includes('400') || error?.status === 400) {
+          setErrorMessage('Invalid information provided. Please check your details and try again.');
+        } else if (error?.message?.includes('500') || error?.status === 500) {
+          setErrorMessage('Something went wrong on our end. Please try again later.');
+        } else {
+          setErrorMessage('Failed to create account. Please try again.');
+        }
+        
+        setStep('error');
+      }
     }
   };
 
@@ -401,9 +522,10 @@ export default function SignInForm() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer"
+            disabled={customerSigninMutation.isPending || adminSigninMutation.isPending}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-6 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer"
           >
-            Sign In
+            {(customerSigninMutation.isPending || adminSigninMutation.isPending) ? 'Signing In...' : 'Sign In'}
           </button>
 
           <button
@@ -626,9 +748,10 @@ export default function SignInForm() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer"
+            disabled={signupMutation.isPending}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-6 rounded-lg font-semibold transition-colors whitespace-nowrap cursor-pointer"
           >
-            Create Account
+            {signupMutation.isPending ? 'Creating Account...' : 'Create Account'}
           </button>
 
           <button
