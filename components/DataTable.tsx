@@ -34,6 +34,7 @@ interface DataTableProps {
   onPageChange?: (page: number) => void;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  extraActions?: Array<{ title: string; iconClass?: string; onClick: (row: any) => void }>;
 }
 
 export default function DataTable({
@@ -59,6 +60,7 @@ export default function DataTable({
   onPageChange,
   searchValue,
   onSearchChange,
+  extraActions = [],
 }: DataTableProps) {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -406,6 +408,16 @@ export default function DataTable({
                           <i className="ri-delete-bin-line"></i>
                         </button>
                       )}
+                      {extraActions && extraActions.map((action, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => action.onClick(row)}
+                          className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+                          title={action.title}
+                        >
+                          <i className={action.iconClass || 'ri-more-line'}></i>
+                        </button>
+                      ))}
                     </div>
                   </td>
                 </tr>

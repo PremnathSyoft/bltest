@@ -29,6 +29,7 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
     { icon: 'ri-map-pin-line', label: 'Locations', href: '/dashboard/admin/locations' },
     { icon: 'ri-gift-line', label: 'Coupons', href: '/dashboard/admin/coupons' },
     { icon: 'ri-calendar-2-line', label: 'Bookings', href: '/dashboard/admin/bookings' },
+    { icon: 'ri-shield-user-line', label: 'Safety Companions', href: '/dashboard/admin/safety-companions' },
     { icon: 'ri-customer-service-line', label: 'Contact Us', href: '/dashboard/admin/contact-us' },
     // { icon: 'ri-user-star-line', label: 'Instructors', href: '/dashboard/admin/instructors' },
     // { icon: 'ri-calendar-line', label: 'Lessons', href: '/dashboard/admin/lessons' },
