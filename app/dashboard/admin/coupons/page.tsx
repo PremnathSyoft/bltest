@@ -134,8 +134,8 @@ export default function CouponsPage() {
           currentPage={currentPage}
           totalItems={total}
           onPageChange={setCurrentPage}
-          searchValue={''}
-          onSearchChange={() => {}}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
           exportable
           importable
           selectable
