@@ -1,6 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+} from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
 import { useStudents } from '@/lib/hooks/useStudents';
@@ -30,6 +47,25 @@ export default function AdminDashboard() {
     admins: students.filter(s => s.role === 'Admin').length,
     superAdmins: students.filter(s => s.role === 'SuperAdmin').length,
   };
+
+  // Static demo data for charts (can be wired to real analytics later)
+  const signupsTrendData = [
+    { name: 'Mon', signups: 12 },
+    { name: 'Tue', signups: 18 },
+    { name: 'Wed', signups: 10 },
+    { name: 'Thu', signups: 22 },
+    { name: 'Fri', signups: 27 },
+    { name: 'Sat', signups: 16 },
+    { name: 'Sun', signups: 14 },
+  ];
+
+  const roleDistributionData = [
+    { name: 'Customers', value: roleStats.customers },
+    { name: 'Instructors', value: roleStats.instructors },
+    { name: 'Admins', value: roleStats.admins },
+    { name: 'Super Admins', value: roleStats.superAdmins },
+  ];
+  const ROLE_COLORS = ['#3B82F6', '#8B5CF6', '#6366F1', '#6B7280'];
 
   // Recent students (last 7 days)
   const recentStudents = students
@@ -190,46 +226,93 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                   </div>
-                </div>
+          </div>
 
           {/* Role Distribution */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">User Roles</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={roleDistributionData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
+                  >
+                    {roleDistributionData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={ROLE_COLORS[index % ROLE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+              </div>
+        </div>
+
+        {/* Charts: Engagement Overview */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Weekly Signups</h3>
+              <span className="text-sm text-gray-500">Static demo</span>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={signupsTrendData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="signups" stroke="#3B82F6" fillOpacity={1} fill="url(#colorSignups)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Summary</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Customers</span>
-                </div>
-                <span className="text-sm font-medium text-gray-900">{roleStats.customers}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Instructors</span>
-                </div>
-                <span className="text-sm font-medium text-gray-900">{roleStats.instructors}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Admins</span>
-                </div>
-                <span className="text-sm font-medium text-gray-900">{roleStats.admins}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Super Admins</span>
-                        </div>
-                <span className="text-sm font-medium text-gray-900">{roleStats.superAdmins}</span>
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <i className="ri-user-add-line text-blue-600"></i>
                   </div>
+                  <span className="text-sm text-gray-700">New this week</span>
                 </div>
+                <span className="text-sm font-semibold text-blue-700">{recentStudents.length}</span>
               </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <i className="ri-check-line text-green-600"></i>
+                  </div>
+                  <span className="text-sm text-gray-700">Approved</span>
                 </div>
+                <span className="text-sm font-semibold text-green-700">{approvedStudents}</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 border border-yellow-100">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                    <i className="ri-time-line text-yellow-600"></i>
+                  </div>
+                  <span className="text-sm text-gray-700">Pending</span>
+                </div>
+                <span className="text-sm font-semibold text-yellow-700">{pendingStudents}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Recent Students */}
         {recentStudents.length > 0 && (
