@@ -12,16 +12,13 @@ export default function TeamMembersPage() {
   const { user } = useAuth();
   const {
     teamMembers,
-    loading,
-    error,
     fetchTeamMembers,
     createTeamMember,
     updateTeamMember,
     deleteTeamMember,
     bulkDeleteTeamMembers,
     importTeamMembers,
-    exportTeamMembers,
-    clearError
+    exportTeamMembers
   } = useTeamMembers();
 
   const [showForm, setShowForm] = useState(false);
@@ -46,17 +43,9 @@ export default function TeamMembersPage() {
     password: ''
   });
 
-
   useEffect(() => {
     fetchTeamMembers();
   }, [fetchTeamMembers]);
-
-  useEffect(() => {
-    if (error) {
-      notifyToast(error, 'error');
-      clearError();
-    }
-  }, [error, clearError]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -89,7 +78,7 @@ export default function TeamMembersPage() {
         setEditingMember(null);
         resetForm();
       }
-    } catch (error) {
+    } catch {
       notifyToast('Failed to save team member', 'error');
     }
   };
@@ -148,7 +137,9 @@ export default function TeamMembersPage() {
     }
   };
 
-  const handleExport = async (format: 'csv' | 'excel' | 'pdf', selectedIds?: string[]) => {
+  const handleExport = async (format?: 'csv' | 'excel' | 'pdf', selectedIds?: string[]) => {
+    if (!format) return;
+    
     const success = await exportTeamMembers(format, selectedIds);
     if (success) {
       notifyToast(`Team members exported as ${format.toUpperCase()}`, 'success');
@@ -176,8 +167,6 @@ export default function TeamMembersPage() {
       password: ''
     });
   };
-
-
 
   const filteredMembers = teamMembers;
 
@@ -213,45 +202,41 @@ export default function TeamMembersPage() {
           <h1 className="text-3xl font-bold text-gray-900">Team Members</h1>
         </div>
 
-
-
-      {/* Team Members Table */}
-      <div className="bg-white rounded-lg shadow">
-        <DataTable
-          columns={columns}
-          data={filteredMembers}
-          title="Team Members Management"
-          searchable={true}
-          exportable={true}
-          importable={true}
-          selectable={true}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onMultiDelete={handleBulkDelete}
-          onImport={handleImport}
-          onExport={handleExport}
-          addButtonLabel="Add Team Member"
-          onAdd={() => {
-            setShowForm(true);
-            setEditingMember(null);
-            resetForm();
-          }}
-        />
-      </div>
-
-      {/* Add/Edit Form Modal */}
-      {showForm && (
-        <TeamMemberForm
-          formData={formData}
-          editingMember={editingMember}
-          onSubmit={handleSubmit}
-          onInputChange={handleInputChange}
-          onClose={() => setShowForm(false)}
-        />
-      )}
-
-
+        {/* Team Members Table */}
+        <div className="bg-white rounded-lg shadow">
+          <DataTable
+            columns={columns}
+            data={filteredMembers}
+            title="Team Members Management"
+            searchable={true}
+            exportable={true}
+            importable={true}
+            selectable={true}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onMultiDelete={handleBulkDelete}
+            onImport={handleImport}
+            onExport={handleExport}
+            addButtonLabel="Add Team Member"
+            onAdd={() => {
+              setShowForm(true);
+              setEditingMember(null);
+              resetForm();
+            }}
+          />
         </div>
-      </DashboardLayout>
-    );
-  }
+
+        {/* Add/Edit Form Modal */}
+        {showForm && (
+          <TeamMemberForm
+            formData={formData}
+            editingMember={editingMember}
+            onSubmit={handleSubmit}
+            onInputChange={handleInputChange}
+            onClose={() => setShowForm(false)}
+          />
+        )}
+      </div>
+    </DashboardLayout>
+  );
+}

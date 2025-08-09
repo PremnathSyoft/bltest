@@ -86,7 +86,7 @@ export default function Contact() {
       });
 
       if (response.status === 200) {
-        const result = await response.json();
+        // const result = await response.json();
         setIsSubmitted(true);
         setSubmitStatus({
           type: 'success',
@@ -95,7 +95,7 @@ export default function Contact() {
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch  {
       setSubmitStatus({
         type: 'error',
         message: 'We are working on fixing this issue. Please try again later or contact us directly.'
@@ -391,7 +391,7 @@ export default function Contact() {
                     Message Sent Successfully!
                   </h2>
                   <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                    Thank you for contacting us! We've received your message and will get back to you as soon as possible.
+                    Thank you for contacting us! We&apos;ve received your message and will get back to you as soon as possible.
                   </p>
                   <button
                     onClick={handleSendAnotherMessage}
