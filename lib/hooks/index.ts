@@ -8,3 +8,4 @@ export * from './useLocations'
 export * from './useContactUs'
 export * from './useStudents'
 export * from './useCoupons'
+export * from './useTeamMembers';
