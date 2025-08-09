@@ -14,10 +14,8 @@ export function notifyToast(message: string, type: ToastType) {
   } else if (typeof window !== 'undefined') {
     // Fallback: simple alert if provider not mounted yet (should not happen in normal flow)
     if (type === 'error') {
-      // eslint-disable-next-line no-alert
       alert(message)
     } else {
-      // eslint-disable-next-line no-console
       console.log(`[toast:${type}]`, message)
     }
   }

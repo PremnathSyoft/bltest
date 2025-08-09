@@ -13,7 +13,7 @@ import {
   Booking,
   CreateBookingData,
 } from '@/lib/hooks/useBookings'
-import { useExportLocations } from '@/lib/hooks/useLocations' // reuse export pattern but booking has its own export endpoint
+// Removed unused import: useExportLocations
 
 export default function BookingsPage() {
   const { user } = useAuth()

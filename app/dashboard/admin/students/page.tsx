@@ -15,7 +15,7 @@ import {
   CreateStudentData 
 } from '@/lib/hooks/useStudents'
 import { useAuth } from '@/lib/auth-context'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+// Removed unused imports: useMutation, useQueryClient
 
 interface StudentFormData extends Omit<CreateStudentData, 'password'> {
   password?: string
@@ -29,7 +29,7 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
-  const [selectedStudents, setSelectedStudents] = useState<Student[]>([])
+  // Removed unused state: selectedStudents, setSelectedStudents
 
   const itemsPerPage = 10
 

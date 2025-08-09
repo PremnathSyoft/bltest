@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation'
 import DashboardLayout from '@/components/DashboardLayout'
 import { useAuth } from '@/lib/auth-context'
-import { useCompanionAvailability, useSetCompanionAvailability, CompanionAvailability } from '@/lib/hooks/useSafetyCompanions'
+import { useCompanionAvailability, useSetCompanionAvailability } from '@/lib/hooks/useSafetyCompanions'
 import { useState, useEffect } from 'react'
 
 const DAYS = [
@@ -380,7 +380,7 @@ export default function CompanionAvailabilityPage() {
                 <div>
                   <h4 className="text-sm font-medium text-yellow-800">Quick Actions</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Click "Edit Availability" above to open the detailed schedule editor. You can toggle day availability, add multiple time slots, and manage the complete weekly schedule.
+                    Click &quot;Edit Availability&quot; above to open the detailed schedule editor. You can toggle day availability, add multiple time slots, and manage the complete weekly schedule.
                   </p>
                 </div>
               </div>

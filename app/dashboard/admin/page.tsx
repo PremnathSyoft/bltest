@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -13,10 +13,6 @@ import {
   Pie,
   Cell,
   Legend,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
 } from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
@@ -24,7 +20,7 @@ import { useStudents } from '@/lib/hooks/useStudents';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [dateRange, setDateRange] = useState('7'); // 7 days, 30 days, 90 days
+  // Removed unused state variables: dateRange, setDateRange
 
   // Fetch students data for statistics
   const { data: studentsData, isLoading: studentsLoading } = useStudents({ 

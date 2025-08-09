@@ -14,7 +14,7 @@ import {
   useExportSafetyCompanions,
 } from '@/lib/hooks/useSafetyCompanions'
 import { UserProfile } from '@/lib/hooks/useProfile'
-import Link from 'next/link'
+// Removed unused import: Link
 
 export default function SafetyCompanionsPage() {
   const { user } = useAuth()

@@ -11,8 +11,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  LineChart,
-  Line,
   AreaChart,
   Area,
 } from 'recharts'
