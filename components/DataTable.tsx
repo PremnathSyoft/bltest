@@ -27,6 +27,13 @@ interface DataTableProps {
   onMultiExport?: (selectedRows: any[], format: 'csv' | 'excel' | 'pdf') => void;
   addButtonLabel?: string;
   onAdd?: () => void;
+  // Server-side controls
+  serverSide?: boolean;
+  currentPage?: number;
+  totalItems?: number;
+  onPageChange?: (page: number) => void;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
 }
 
 export default function DataTable({
@@ -45,7 +52,13 @@ export default function DataTable({
   onExport,
   onMultiExport,
   addButtonLabel = "Add New",
-  onAdd
+  onAdd,
+  serverSide = false,
+  currentPage: controlledPage,
+  totalItems,
+  onPageChange,
+  searchValue,
+  onSearchChange,
 }: DataTableProps) {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -68,32 +81,46 @@ export default function DataTable({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Sync internal search/page with controlled props if provided
+  useEffect(() => {
+    if (typeof controlledPage === 'number') {
+      setCurrentPage(controlledPage)
+    }
+  }, [controlledPage])
+  useEffect(() => {
+    if (typeof searchValue === 'string') {
+      setSearch(searchValue)
+    }
+  }, [searchValue])
 
   // Ensure data is always an array
   const safeData = Array.isArray(data) ? data : [];
   
-  // Filter and sort data
-  const filteredData = safeData.filter(row => {
-    if (!search) return true;
-    return columns.some(col =>
-      String(row[col.key]).toLowerCase().includes(search.toLowerCase())
-    );
-  });
+  // Client-side filter/sort/pagination (if not serverSide)
+  const filteredData = serverSide
+    ? safeData
+    : safeData.filter(row => {
+        if (!search) return true;
+        return columns.some(col => String(row[col.key]).toLowerCase().includes(search.toLowerCase()));
+      });
 
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortBy) return 0;
-    const aVal = a[sortBy];
-    const bVal = b[sortBy];
-    if (sortOrder === 'asc') {
-      return aVal > bVal ? 1 : -1;
-    }
-    return aVal < bVal ? 1 : -1;
-  });
+  const sortedData = serverSide
+    ? filteredData
+    : [...filteredData].sort((a, b) => {
+        if (!sortBy) return 0;
+        const aVal = a[sortBy];
+        const bVal = b[sortBy];
+        if (sortOrder === 'asc') {
+          return aVal > bVal ? 1 : -1;
+        }
+        return aVal < bVal ? 1 : -1;
+      });
 
-  // Pagination
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
+  const effectiveCurrentPage = typeof controlledPage === 'number' ? controlledPage : currentPage
+  const effectiveTotalItems = serverSide ? (totalItems || sortedData.length) : sortedData.length
+  const totalPages = Math.ceil(effectiveTotalItems / itemsPerPage);
+  const startIndex = (effectiveCurrentPage - 1) * itemsPerPage;
+  const paginatedData = serverSide ? sortedData : sortedData.slice(startIndex, startIndex + itemsPerPage);
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -184,7 +211,11 @@ export default function DataTable({
                   type="text"
                   placeholder="Search..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (onSearchChange) onSearchChange(val)
+                    if (typeof searchValue !== 'string') setSearch(val)
+                  }}
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-64"
                 />
               </div>
@@ -285,12 +316,12 @@ export default function DataTable({
                   key={column.key}
                   className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider relative group cursor-pointer"
                   style={{ width: columnWidths[column.key] || column.width }}
-                  onClick={() => column.sortable && handleSort(column.key)}
+                  onClick={() => !serverSide && column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center justify-between">
                     <span>{column.label}</span>
                     <div className="flex items-center space-x-1">
-                      {column.sortable && (
+                      {!serverSide && column.sortable && (
                         <div className="flex flex-col">
                           <i className={`ri-arrow-up-s-line text-xs ${sortBy === column.key && sortOrder === 'asc' ? 'text-blue-600' : 'text-gray-400'}`}></i>
                           <i className={`ri-arrow-down-s-line text-xs -mt-1 ${sortBy === column.key && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`}></i>
@@ -330,8 +361,8 @@ export default function DataTable({
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedData.map((row, index) => {
-              const rowIndex = String(startIndex + index);
+              {paginatedData.map((row, index) => {
+                const rowIndex = String(startIndex + index);
               return (
                 <tr key={rowIndex} className="hover:bg-gray-50 transition-colors">
                   {selectable && (
@@ -393,7 +424,10 @@ export default function DataTable({
 
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              onClick={() => {
+                if (serverSide && onPageChange) onPageChange(Math.max(1, effectiveCurrentPage - 1))
+                else setCurrentPage(prev => Math.max(1, prev - 1))
+              }}
               disabled={currentPage === 1}
               className="px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -401,14 +435,17 @@ export default function DataTable({
             </button>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + Math.max(1, currentPage - 2);
+              const page = i + Math.max(1, effectiveCurrentPage - 2);
               if (page > totalPages) return null;
 
               return (
                 <button
                   key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 text-sm border rounded-lg transition-colors ${currentPage === page
+                  onClick={() => {
+                    if (serverSide && onPageChange) onPageChange(page)
+                    else setCurrentPage(page)
+                  }}
+                  className={`px-3 py-2 text-sm border rounded-lg transition-colors ${effectiveCurrentPage === page
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                     }`}
@@ -419,8 +456,11 @@ export default function DataTable({
             })}
 
             <button
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => {
+                if (serverSide && onPageChange) onPageChange(Math.min(totalPages, effectiveCurrentPage + 1))
+                else setCurrentPage(prev => Math.min(totalPages, prev + 1))
+              }}
+              disabled={effectiveCurrentPage === totalPages}
               className="px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <i className="ri-arrow-right-s-line"></i>

@@ -232,6 +232,7 @@ export default function StudentsPage() {
 
   // Ensure students is always an array
   const students = Array.isArray(studentsData?.data) ? studentsData.data : []
+  const total = studentsData?.total || students.length
 
   return (
     <DashboardLayout userType="admin" userName={user?.first_name || 'Admin'}>
@@ -246,6 +247,12 @@ export default function StudentsPage() {
           importable={true}
           selectable={true}
           itemsPerPage={itemsPerPage}
+          serverSide
+          currentPage={currentPage}
+          totalItems={total}
+          onPageChange={setCurrentPage}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
           onEdit={handleEditStudent}
           onDelete={handleDeleteStudent}
           onMultiDelete={handleBulkDelete}

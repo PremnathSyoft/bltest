@@ -73,3 +73,76 @@ export function useDeleteLocation() {
     },
   })
 }
+
+export function useBulkDeleteLocations() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (locationIds: string[]) => apiClient.post('/api/locations/bulk_delete', { location_ids: locationIds }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: locationKeys.all })
+    },
+  })
+}
+
+export function useImportLocations() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+      const token = localStorage.getItem('access_token')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://rtcblissdrive.onrender.com'}/api/locations/import`, {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: formData,
+      })
+      if (!response.ok) {
+        const message = `Import failed: ${response.status} ${response.statusText}`
+        try { (await import('../toast')).notifyToast(message, 'error') } catch {}
+        throw new Error(message)
+      }
+      try { (await import('../toast')).notifyToast('Import completed successfully', 'success') } catch {}
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: locationKeys.lists() })
+    },
+  })
+}
+
+export function useExportLocations() {
+  return useMutation({
+    mutationFn: async ({ format, location_ids = [], filters = '' }: { format: 'csv' | 'excel' | 'pdf'; location_ids?: string[]; filters?: string }) => {
+      const token = localStorage.getItem('access_token')
+      const formData = new FormData()
+      formData.append('export_format', format)
+      location_ids.forEach(id => formData.append('location_ids', id))
+      if (filters) formData.append('filters', filters)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://rtcblissdrive.onrender.com'}/api/locations/export`, {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: formData,
+      })
+      if (!response.ok) {
+        const message = `Export failed: ${response.status} ${response.statusText}`
+        try { (await import('../toast')).notifyToast(message, 'error') } catch {}
+        throw new Error(message)
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `locations_export.${format === 'excel' ? 'xlsx' : format}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      try { (await import('../toast')).notifyToast('Export started', 'success') } catch {}
+      return 'Export completed successfully'
+    },
+  })
+}
