@@ -31,7 +31,7 @@ export default function PaymentsPage() {
     });
   };
 
-  const handleExport = (format: 'csv' | 'excel' | 'pdf', selectedIds?: string[]) => {
+  const handleExport = (format: 'csv' | 'excel' | 'pdf' = 'csv', selectedIds?: string[]) => {
     exportMutation.mutate({
       format,
       paymentIds: selectedIds && selectedIds.length > 0 ? selectedIds : undefined,
@@ -43,7 +43,13 @@ export default function PaymentsPage() {
           window.open(response, '_blank');
         } else {
           // Otherwise, create a blob and download
-          const blob = new Blob([response], { type: 'application/octet-stream' });
+          // Convert response to BlobPart - it could be string, ArrayBuffer, or other binary data
+          const blobData: BlobPart = typeof response === 'string' ? response : 
+            response instanceof ArrayBuffer ? response : 
+            response instanceof Uint8Array ? response : 
+            JSON.stringify(response);
+          
+          const blob = new Blob([blobData], { type: 'application/octet-stream' });
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;

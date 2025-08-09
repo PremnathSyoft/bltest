@@ -29,7 +29,6 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
-  // Removed unused state: selectedStudents, setSelectedStudents
 
   const itemsPerPage = 10
 
@@ -157,7 +156,6 @@ export default function StudentsPage() {
   }
 
   const handleBulkDelete = (students: Student[]) => {
-    setSelectedStudents(students)
     bulkDeleteMutation.mutate(students.map(s => s.id))
   }
 
