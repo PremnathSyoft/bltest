@@ -126,8 +126,8 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
           {children}
         </main>
 
-        {/* Bottom Navigation for Customer on Mobile */}
-        {userType === 'customer' && <BottomNavigation />}
+        {/* Bottom Navigation for Mobile */}
+        <BottomNavigation userType={userType} />
       </div>
 
       {/* Overlay for mobile */}
