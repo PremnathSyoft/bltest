@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Column {
   key: string;
@@ -23,7 +23,10 @@ interface DataTableProps {
   onDelete?: (row: any) => void;
   onMultiDelete?: (selectedRows: any[]) => void;
   onImport?: (file: File) => void;
-  onExport?: () => void;
+  onExport?: (format?: 'csv' | 'excel' | 'pdf', selectedIds?: string[]) => void;
+  onMultiExport?: (selectedRows: any[], format: 'csv' | 'excel' | 'pdf') => void;
+  addButtonLabel?: string;
+  onAdd?: () => void;
 }
 
 export default function DataTable({
@@ -39,7 +42,10 @@ export default function DataTable({
   onDelete,
   onMultiDelete,
   onImport,
-  onExport
+  onExport,
+  onMultiExport,
+  addButtonLabel = "Add New",
+  onAdd
 }: DataTableProps) {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -47,10 +53,27 @@ export default function DataTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<{ [key: string]: number }>({});
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
+  const exportDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close export dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(event.target as Node)) {
+        setShowExportDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
 
+  // Ensure data is always an array
+  const safeData = Array.isArray(data) ? data : [];
+  
   // Filter and sort data
-  const filteredData = data.filter(row => {
+  const filteredData = safeData.filter(row => {
     if (!search) return true;
     return columns.some(col =>
       String(row[col.key]).toLowerCase().includes(search.toLowerCase())
@@ -108,16 +131,49 @@ export default function DataTable({
     setColumnWidths(prev => ({ ...prev, [column]: width }));
   };
 
+  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+    const selectedData = selectedRows.map(index => paginatedData[parseInt(index) - startIndex]);
+    if (selectedRows.length > 0 && onMultiExport) {
+      onMultiExport(selectedData, format);
+    } else if (onExport) {
+      onExport(format, selectedRows.length > 0 ? selectedData.map(row => row.id) : undefined);
+    }
+    setShowExportDropdown(false);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-          {title && (
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-          )}
+          <div className="flex items-center justify-between w-full md:w-auto">
+            {title && (
+              <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            )}
+            
+            {/* Add Button */}
+            {onAdd && (
+              <button
+                onClick={onAdd}
+                className="md:hidden flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <i className="ri-add-line mr-2"></i>
+                {addButtonLabel}
+              </button>
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center space-x-3 space-y-2 md:space-y-0">
+            {/* Add Button for larger screens */}
+            {onAdd && (
+              <button
+                onClick={onAdd}
+                className="hidden md:flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <i className="ri-add-line mr-2"></i>
+                {addButtonLabel}
+              </button>
+            )}
             {/* Search */}
             {searchable && (
               <div className="relative">
@@ -163,15 +219,46 @@ export default function DataTable({
               </label>
             )}
 
-            {/* Export */}
+            {/* Export Dropdown */}
             {exportable && (
-              <button
-                onClick={onExport}
-                className="flex items-center px-4 py-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
-              >
-                <i className="ri-download-line mr-2"></i>
-                Export
-              </button>
+              <div className="relative" ref={exportDropdownRef}>
+                <button
+                  onClick={() => setShowExportDropdown(!showExportDropdown)}
+                  className="flex items-center px-4 py-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                >
+                  <i className="ri-download-line mr-2"></i>
+                  Export {selectedRows.length > 0 && `(${selectedRows.length})`}
+                  <i className="ri-arrow-down-s-line ml-1"></i>
+                </button>
+                
+                {showExportDropdown && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleExport('csv')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                      >
+                        <i className="ri-file-text-line mr-2"></i>
+                        Export CSV
+                      </button>
+                      <button
+                        onClick={() => handleExport('excel')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                      >
+                        <i className="ri-file-excel-line mr-2"></i>
+                        Export Excel
+                      </button>
+                      <button
+                        onClick={() => handleExport('pdf')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                      >
+                        <i className="ri-file-pdf-line mr-2"></i>
+                        Export PDF
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

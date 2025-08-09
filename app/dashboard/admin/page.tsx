@@ -1,607 +1,308 @@
-
 'use client';
 
-import DashboardLayout from '../../../components/DashboardLayout';
-import DataTable from '../../../components/DataTable';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useState } from 'react';
+import DashboardLayout from '@/components/DashboardLayout';
+import { useAuth } from '@/lib/auth-context';
+import { useStudents } from '@/lib/hooks/useStudents';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const { user } = useAuth();
+  const [dateRange, setDateRange] = useState('7'); // 7 days, 30 days, 90 days
+
+  // Fetch students data for statistics
+  const { data: studentsData, isLoading: studentsLoading } = useStudents({ 
+    page: 1, 
+    offset: 100 // Get more records for statistics
+  });
+
+  const students = Array.isArray(studentsData?.data) ? studentsData.data : [];
+
+  // Calculate statistics
+  const totalStudents = students.length;
+  const approvedStudents = students.filter(s => s.verification_status === 'approved').length;
+  const pendingStudents = students.filter(s => s.verification_status === 'pending').length;
+  const rejectedStudents = students.filter(s => s.verification_status === 'rejected').length;
+
+  // Role distribution
+  const roleStats = {
+    customers: students.filter(s => s.role === 'Customer').length,
+    instructors: students.filter(s => s.role === 'Instructor').length,
+    admins: students.filter(s => s.role === 'Admin').length,
+    superAdmins: students.filter(s => s.role === 'SuperAdmin').length,
+  };
+
+  // Recent students (last 7 days)
+  const recentStudents = students
+    .filter(s => {
+      if (!s.created_at) return false;
+      const createdDate = new Date(s.created_at);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return createdDate >= weekAgo;
+    })
+    .slice(0, 5); // Show only 5 most recent
 
   const stats = [
     {
       title: 'Total Students',
-      value: '2,847',
-      change: '+12%',
+      value: totalStudents.toString(),
+      change: `+${recentStudents.length}`,
+      changeLabel: 'this week',
       icon: 'ri-user-line',
       color: 'blue',
-      trend: [20, 45, 35, 75, 55, 85, 70, 95]
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600',
+      borderColor: 'border-blue-200'
     },
     {
-      title: 'Active Instructors',
-      value: '42',
-      change: '+8%',
-      icon: 'ri-user-star-line',
+      title: 'Approved Students',
+      value: approvedStudents.toString(),
+      change: `${totalStudents > 0 ? Math.round((approvedStudents / totalStudents) * 100) : 0}%`,
+      changeLabel: 'of total',
+      icon: 'ri-check-line',
       color: 'green',
-      trend: [30, 25, 45, 55, 65, 60, 70, 75]
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-600',
+      borderColor: 'border-green-200'
     },
     {
-      title: 'Today\'s Slots',
-      value: '186',
-      change: '+15%',
-      icon: 'ri-calendar-check-line',
+      title: 'Pending Review',
+      value: pendingStudents.toString(),
+      change: `${totalStudents > 0 ? Math.round((pendingStudents / totalStudents) * 100) : 0}%`,
+      changeLabel: 'of total',
+      icon: 'ri-time-line',
+      color: 'yellow',
+      bgColor: 'bg-yellow-50',
+      textColor: 'text-yellow-600',
+      borderColor: 'border-yellow-200'
+    },
+    {
+      title: 'Instructors',
+      value: roleStats.instructors.toString(),
+      change: `${totalStudents > 0 ? Math.round((roleStats.instructors / totalStudents) * 100) : 0}%`,
+      changeLabel: 'of users',
+      icon: 'ri-user-star-line',
       color: 'purple',
-      trend: [40, 35, 50, 45, 60, 55, 70, 80]
-    },
-    {
-      title: 'Revenue Today',
-      value: '$8,420',
-      change: '+23%',
-      icon: 'ri-money-dollar-circle-line',
-      color: 'orange',
-      trend: [15, 25, 35, 45, 40, 60, 75, 85]
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-600',
+      borderColor: 'border-purple-200'
     }
   ];
 
-  const revenueData = [
-    { name: 'Jan', revenue: 4200, lessons: 85 },
-    { name: 'Feb', revenue: 5800, lessons: 120 },
-    { name: 'Mar', revenue: 7200, lessons: 144 },
-    { name: 'Apr', revenue: 8900, lessons: 178 },
-    { name: 'May', revenue: 9500, lessons: 190 },
-    { name: 'Jun', revenue: 11200, lessons: 224 }
-  ];
-
-  const lessonTypeData = [
-    { name: 'Practice Sessions', value: 65, color: '#3B82F6' },
-    { name: 'Road Test Prep', value: 35, color: '#10B981' }
-  ];
-
-  const pendingBookings = [
-    {
-      id: 'BK001',
-      studentName: 'John Smith',
-      lessonType: 'Practice Session',
-      date: '2024-01-25',
-      time: '09:00 AM',
-      duration: '1 hour',
-      instructor: 'Sarah Johnson',
-      status: 'Pending',
-      pickupAddress: '123 Main St, Downtown',
-      rate: '$60/hour',
-      estimatedAmount: '$60.00'
-    },
-    {
-      id: 'BK002',
-      studentName: 'Emily Davis',
-      lessonType: 'Road Test Prep',
-      date: '2024-01-25',
-      time: '11:00 AM',
-      duration: '2 hours',
-      instructor: 'Mike Wilson',
-      status: 'Pending',
-      pickupAddress: '456 Oak Ave, Suburbs',
-      rate: '$98/hour',
-      estimatedAmount: '$196.00'
-    },
-    {
-      id: 'BK003',
-      studentName: 'Robert Chen',
-      lessonType: 'Practice Session',
-      date: '2024-01-26',
-      time: '02:00 PM',
-      duration: '1.5 hours',
-      instructor: 'Lisa Brown',
-      status: 'Pending',
-      pickupAddress: '789 Pine Rd, Eastside',
-      rate: '$60/hour',
-      estimatedAmount: '$90.00'
-    }
-  ];
-
-  const recentLessons = [
-    {
-      id: 'LS001',
-      studentName: 'Alice Johnson',
-      instructor: 'Tom Davis',
-      lessonType: 'Practice Session',
-      date: '2024-01-24',
-      scheduledDuration: '1 hour',
-      actualDuration: '55m',
-      status: 'Completed',
-      rating: 5,
-      scheduledAmount: '$60.00',
-      actualAmount: '$55.00',
-      paymentStatus: 'Paid'
-    },
-    {
-      id: 'LS002',
-      studentName: 'Mark Wilson',
-      instructor: 'Emma Rodriguez',
-      lessonType: 'Road Test Prep',
-      date: '2024-01-24',
-      scheduledDuration: '2 hours',
-      actualDuration: '2h 20m',
-      status: 'Completed',
-      rating: 4,
-      scheduledAmount: '$196.00',
-      actualAmount: '$228.67',
-      paymentStatus: 'Paid'
-    },
-    {
-      id: 'LS003',
-      studentName: 'Sarah Brown',
-      instructor: 'James Miller',
-      lessonType: 'Practice Session',
-      date: '2024-01-25',
-      scheduledDuration: '2 hours',
-      actualDuration: 'In Progress',
-      status: 'Active',
-      rating: null,
-      scheduledAmount: '$120.00',
-      actualAmount: 'TBD',
-      paymentStatus: 'Pending'
-    }
-  ];
-
-  const handleApproveBooking = (booking: any) => {
-    alert(`Booking ${booking.id} approved! Student will be notified.`);
-  };
-
-  const handleRejectBooking = (booking: any) => {
-    alert(`Booking ${booking.id} rejected! Student will be notified.`);
-  };
-
-  const pendingBookingColumns = [
-    {
-      key: 'id',
-      label: 'Booking ID',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'studentName',
-      label: 'Student Name',
-      sortable: true,
-      width: '150px'
-    },
-    {
-      key: 'lessonType',
-      label: 'Lesson Type',
-      sortable: true,
-      width: '130px',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Practice Session' 
-            ? 'bg-blue-100 text-blue-800' 
-            : 'bg-purple-100 text-purple-800'
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'date',
-      label: 'Date',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'time',
-      label: 'Time',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'duration',
-      label: 'Duration',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'rate',
-      label: 'Rate',
-      sortable: true,
-      width: '100px',
-      render: (value: string) => (
-        <span className="text-sm font-medium text-green-600">{value}</span>
-      )
-    },
-    {
-      key: 'estimatedAmount',
-      label: 'Est. Amount',
-      sortable: true,
-      width: '110px',
-      render: (value: string) => (
-        <span className="text-sm font-semibold text-blue-600">{value}</span>
-      )
-    },
-    {
-      key: 'instructor',
-      label: 'Instructor',
-      sortable: true,
-      width: '140px'
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      sortable: true,
-      width: '100px',
-      render: (value: string) => (
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          {value}
-        </span>
-      )
-    }
-  ];
-
-  const recentLessonsColumns = [
-    {
-      key: 'id',
-      label: 'Lesson ID',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'studentName',
-      label: 'Student',
-      sortable: true,
-      width: '150px'
-    },
-    {
-      key: 'instructor',
-      label: 'Instructor',
-      sortable: true,
-      width: '150px'
-    },
-    {
-      key: 'lessonType',
-      label: 'Type',
-      sortable: true,
-      width: '130px',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Practice Session' 
-            ? 'bg-blue-100 text-blue-800' 
-            : 'bg-purple-100 text-purple-800'
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'date',
-      label: 'Date',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'scheduledDuration',
-      label: 'Scheduled',
-      sortable: true,
-      width: '100px'
-    },
-    {
-      key: 'actualDuration',
-      label: 'Actual',
-      sortable: true,
-      width: '100px',
-      render: (value: string) => (
-        <span className={`text-sm font-medium ${
-          value === 'In Progress' ? 'text-orange-600' : 'text-gray-900'
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'actualAmount',
-      label: 'Amount',
-      sortable: true,
-      width: '100px',
-      render: (value: string) => (
-        <span className={`font-medium ${
-          value === 'TBD' ? 'text-orange-600' : 'text-green-600'
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'paymentStatus',
-      label: 'Payment',
-      sortable: true,
-      width: '100px',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'Paid' 
-            ? 'bg-green-100 text-green-800'
-            : 'bg-orange-100 text-orange-800'
-        }`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'rating',
-      label: 'Rating',
-      sortable: true,
-      width: '100px',
-      render: (value: number) => 
-        value ? (
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <i
-                key={i}
-                className={`ri-star-${i < value ? 'fill' : 'line'} text-yellow-400`}
-              ></i>
-            ))}
+  if (studentsLoading) {
+    return (
+      <DashboardLayout userType="admin" userName={user?.first_name || 'Admin'}>
+        <div className="p-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-        ) : (
-          <span className="text-gray-400 text-sm">Pending</span>
-        )
-    }
-  ];
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
-    <DashboardLayout userType="admin" userName="Admin">
+    <DashboardLayout userType="admin" userName={user?.first_name || 'Admin'}>
       <div className="p-6">
-        {/* Animated Header */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-lg text-gray-600">Manage your driving school with comprehensive insights</p>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">Overview of your driving school management system</p>
         </div>
 
-        {/* Enhanced Stats Cards with Mini Charts */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <div key={index} className="group bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div
+              key={index}
+              className={`${stat.bgColor} ${stat.borderColor} border rounded-xl p-6 transition-all duration-200 hover:shadow-lg`}
+            >
               <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                  <p className="text-sm text-green-600 mt-1 flex items-center">
-                    <i className="ri-arrow-up-line mr-1"></i>
-                    {stat.change} from last month
-                  </p>
+                <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                  <i className={`${stat.icon} text-xl ${stat.textColor}`}></i>
                 </div>
-                <div className={`w-14 h-14 flex items-center justify-center bg-${stat.color}-100 rounded-xl group-hover:scale-110 transition-transform duration-300`}>
-                  <i className={`${stat.icon} text-2xl text-${stat.color}-600`}></i>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">{stat.title}</p>
                 </div>
               </div>
-              
-              {/* Mini Trend Chart */}
-              <div className="h-12">
-              <ResponsiveContainer width="100%" height="100%">
-  <AreaChart data={stat.trend.map((value) => ({ value }))}>
-    <Area 
-      type="monotone" 
-      dataKey="value" 
-      stroke={`var(--${stat.color}-500)`}
-      fill={`var(--${stat.color}-500)`}
-      fillOpacity={0.3}
-      strokeWidth={2}
-    />
-  </AreaChart>
-</ResponsiveContainer>
-
+              <div className="flex items-center">
+                <span className={`text-sm font-medium ${stat.textColor}`}>
+                  {stat.change}
+                </span>
+                <span className="text-sm text-gray-500 ml-1">{stat.changeLabel}</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
-              {[
-                { id: 'overview', label: 'Overview', icon: 'ri-dashboard-line' },
-                { id: 'bookings', label: 'Pending Approvals', icon: 'ri-calendar-check-line' },
-                { id: 'lessons', label: 'Active & Recent Lessons', icon: 'ri-history-line' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <i className={`${tab.icon} mr-2`}></i>
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Verification Status Chart */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Verification Status</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Approved</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-600 mr-2">{approvedStudents}</span>
+                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full" 
+                      style={{ width: `${totalStudents > 0 ? (approvedStudents / totalStudents) * 100 : 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Pending</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-600 mr-2">{pendingStudents}</span>
+                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-yellow-500 h-2 rounded-full" 
+                      style={{ width: `${totalStudents > 0 ? (pendingStudents / totalStudents) * 100 : 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Rejected</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-600 mr-2">{rejectedStudents}</span>
+                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-red-500 h-2 rounded-full" 
+                      style={{ width: `${totalStudents > 0 ? (rejectedStudents / totalStudents) * 100 : 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="p-6">
-            {activeTab === 'overview' && (
-              <div className="animate-fade-in space-y-8">
-                {/* Charts Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                  {/* Revenue Chart */}
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-bold text-gray-900">Revenue Trends</h3>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        <span>Monthly Revenue</span>
-                      </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={350}>
-                      <AreaChart data={revenueData}>
-                        <defs>
-                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                          </linearGradient>
-                        </defs>
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                        <YAxis axisLine={false} tickLine={false} />
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                        <Tooltip 
-                          contentStyle={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            border: 'none',
-                            borderRadius: '12px',
-                            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#3B82F6" 
-                          fillOpacity={1} 
-                          fill="url(#colorRevenue)"
-                          strokeWidth={3}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
+          {/* Role Distribution */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">User Roles</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Customers</span>
+                </div>
+                <span className="text-sm font-medium text-gray-900">{roleStats.customers}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Instructors</span>
+                </div>
+                <span className="text-sm font-medium text-gray-900">{roleStats.instructors}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Admins</span>
+                </div>
+                <span className="text-sm font-medium text-gray-900">{roleStats.admins}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
+                  <span className="text-gray-700">Super Admins</span>
+                </div>
+                <span className="text-sm font-medium text-gray-900">{roleStats.superAdmins}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  {/* Lesson Types Chart */}
-                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6">Lesson Distribution</h3>
-                    <ResponsiveContainer width="100%" height={350}>
-                      <PieChart>
-                        <Pie
-                          data={lessonTypeData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={80}
-                          outerRadius={140}
-                          paddingAngle={5}
-                          dataKey="value"
-                        >
-                          {lessonTypeData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          contentStyle={{
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            border: 'none',
-                            borderRadius: '12px',
-                            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="flex justify-center space-x-6 mt-4">
-                      {lessonTypeData.map((item, index) => (
-                        <div key={index} className="flex items-center">
-                          <div className="w-4 h-4 rounded-full mr-3" style={{backgroundColor: item.color}}></div>
-                          <span className="text-sm font-medium text-gray-700">{item.name}</span>
-                          <span className="text-sm text-gray-500 ml-2">({item.value}%)</span>
-                        </div>
-                      ))}
+        {/* Recent Students */}
+        {recentStudents.length > 0 && (
+          <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Students (This Week)</h3>
+            <div className="space-y-3">
+              {recentStudents.map((student, index) => (
+                <div key={student.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-blue-600 font-medium">
+                        {student.first_name?.charAt(0)}{student.last_name?.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {student.first_name} {student.last_name}
+                      </p>
+                      <p className="text-sm text-gray-600">{student.email}</p>
                     </div>
                   </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                      { label: 'Add Instructor', icon: 'ri-user-add-line', color: 'blue' },
-                      { label: 'Schedule Lesson', icon: 'ri-calendar-event-line', color: 'green' },
-                      { label: 'Generate Report', icon: 'ri-file-chart-line', color: 'purple' },
-                      { label: 'System Settings', icon: 'ri-settings-line', color: 'orange' }
-                    ].map((action, index) => (
-                      <button
-                        key={index}
-                        className={`p-4 bg-white rounded-xl border border-gray-200 hover:border-${action.color}-300 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 group`}
-                      >
-                        <div className={`w-12 h-12 bg-${action.color}-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-${action.color}-200 transition-colors`}>
-                          <i className={`${action.icon} text-2xl text-${action.color}-600`}></i>
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">{action.label}</span>
-                      </button>
-                    ))}
+                  <div className="text-right">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      student.verification_status === 'approved' ? 'bg-green-100 text-green-800' :
+                      student.verification_status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {student.verification_status?.charAt(0).toUpperCase() + student.verification_status?.slice(1)}
+                    </span>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a
+              href="/dashboard/admin/students"
+              className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+            >
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                <i className="ri-user-line text-2xl text-blue-600"></i>
               </div>
-            )}
-
-            {activeTab === 'bookings' && (
-              <div className="animate-fade-in">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Pending Booking Approvals</h3>
-                  <p className="text-gray-600">Review and approve student lesson bookings</p>
-                </div>
-
-                <DataTable
-                  title="Pending Lesson Bookings"
-                  columns={pendingBookingColumns}
-                  data={pendingBookings}
-                  searchable={true}
-                  exportable={true}
-                  importable={false}
-                  selectable={true}
-                  onEdit={(booking) => handleApproveBooking(booking)}
-                  onDelete={(booking) => handleRejectBooking(booking)}
-                  onMultiDelete={(bookings) => {
-                    bookings.forEach(booking => handleApproveBooking(booking));
-                  }}
-                  onExport={() => alert('Exporting bookings data...')}
-                />
-
-                {/* Custom Action Buttons for Bookings */}
-                <div className="mt-6 flex flex-wrap space-x-4 space-y-2">
-                  <button className="flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                    <i className="ri-check-line mr-2"></i>
-                    Approve Selected
-                  </button>
-                  <button className="flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
-                    <i className="ri-close-line mr-2"></i>
-                    Reject Selected
-                  </button>
-                  <button className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                    <i className="ri-mail-send-line mr-2"></i>
-                    Send Notifications
-                  </button>
-                </div>
+              <span className="text-sm font-medium text-gray-700">Manage Students</span>
+            </a>
+            
+            <button className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                <i className="ri-user-add-line text-2xl text-green-600"></i>
               </div>
-            )}
-
-            {activeTab === 'lessons' && (
-              <div className="animate-fade-in">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Active & Recent Lessons</h3>
-                  <p className="text-gray-600">Monitor ongoing lessons and payment status</p>
-                </div>
-
-                <DataTable
-                  title="Lesson Management"
-                  columns={recentLessonsColumns}
-                  data={recentLessons}
-                  searchable={true}
-                  exportable={true}
-                  importable={true}
-                  selectable={true}
-                  onEdit={(lesson) => alert(`Viewing lesson ${lesson.id} details`)}
-                  onDelete={(lesson) => alert(`Canceling lesson ${lesson.id}`)}
-                  onImport={(file) => alert(`Importing lessons from ${file.name}`)}
-                  onExport={() => alert('Exporting lessons data...')}
-                />
+              <span className="text-sm font-medium text-gray-700">Add Student</span>
+            </button>
+            
+            <button className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                <i className="ri-download-line text-2xl text-purple-600"></i>
               </div>
-            )}
+              <span className="text-sm font-medium text-gray-700">Export Data</span>
+            </button>
+            
+            <button className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all duration-200">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
+                <i className="ri-settings-line text-2xl text-orange-600"></i>
+              </div>
+              <span className="text-sm font-medium text-gray-700">Settings</span>
+            </button>
           </div>
         </div>
       </div>
-      
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-      `}</style>
     </DashboardLayout>
   );
 }

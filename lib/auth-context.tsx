@@ -24,14 +24,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
 
+  // Function to check if JWT token is expired
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const currentTime = Date.now() / 1000
+      return payload.exp < currentTime
+    } catch (error) {
+      console.error('Error parsing token:', error)
+      return true // Treat invalid tokens as expired
+    }
+  }
+
   useEffect(() => {
     // Check for stored auth data on mount
     const storedToken = localStorage.getItem('access_token')
     const storedUser = localStorage.getItem('user')
     
     if (storedToken && storedUser) {
-      setToken(storedToken)
-      setUser(JSON.parse(storedUser))
+      // Check if token is expired
+      if (isTokenExpired(storedToken)) {
+        // Token is expired, clear storage
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        localStorage.removeItem('user')
+        setToken(null)
+        setUser(null)
+      } else {
+        // Token is valid
+        setToken(storedToken)
+        setUser(JSON.parse(storedUser))
+      }
     }
   }, [])
 
@@ -51,13 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
+  // Calculate isAuthenticated based on token validity
+  const isAuthenticated = !!token && !!user && !isTokenExpired(token)
+
   return (
     <AuthContext.Provider value={{
       user,
       token,
       login,
       logout,
-      isAuthenticated: !!token && !!user
+      isAuthenticated
     }}>
       {children}
     </AuthContext.Provider>
