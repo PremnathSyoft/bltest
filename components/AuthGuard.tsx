@@ -29,16 +29,16 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         // Role-based routing: redirect to correct dashboard if user is on wrong one
         const isAdminRoute = pathname.startsWith('/dashboard/admin');
         const isCustomerRoute = pathname.startsWith('/dashboard/customer');
-        const isSuperAdmin = user.role === 'SuperAdmin';
+        const isAdmin = user.role === 'Admin' || user.role === 'SuperAdmin';
 
-        if (isAdminRoute && !isSuperAdmin) {
+        if (isAdminRoute && !isAdmin) {
           // Non-admin trying to access admin routes
           router.replace('/dashboard/customer');
           return;
         }
 
-        if (isCustomerRoute && isSuperAdmin) {
-          // Admin trying to access customer routes
+        if (isCustomerRoute && isAdmin) {
+          // Admins should default to admin dashboard
           router.replace('/dashboard/admin');
           return;
         }

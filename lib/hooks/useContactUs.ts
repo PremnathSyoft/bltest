@@ -31,10 +31,44 @@ export function useCreateContactUs() {
   })
 }
 
+export interface ContactUsListResponse {
+  data: ContactUs[]
+  total?: number
+  page?: number
+  per_page?: number
+  total_pages?: number
+}
+
 export function useContactUsList(page = 1, offset = 10, filters?: string) {
   return useQuery({
     queryKey: [...contactKeys.lists(), { page, offset, filters }],
-    queryFn: () => apiClient.get<{ data: ContactUs[] }>(`/api/contact-us?page=${page}&offset=${offset}${filters ? `&filters=${filters}` : ''}`),
+    queryFn: async (): Promise<ContactUsListResponse> => {
+      const endpoint = `/api/contact-us?page=${page}&offset=${offset}${filters ? `&filters=${filters}` : ''}`
+      console.log('Fetching contact-us from:', endpoint)
+      const response = await apiClient.get<any>(endpoint)
+      console.log('Contact-us API response:', response)
+
+      // Normalize backend structure: { status, message, data: { total, page, offset, data, pages } }
+      if (response && typeof response === 'object' && response.status === 200 && response.data && Array.isArray(response.data.data)) {
+        return {
+          data: response.data.data,
+          total: response.data.total,
+          page: response.data.page,
+          per_page: response.data.offset,
+          total_pages: response.data.pages,
+        }
+      }
+      // Fallbacks
+      if (Array.isArray(response?.data)) {
+        return { data: response.data }
+      }
+      if (Array.isArray(response)) {
+        return { data: response }
+      }
+      return { data: [] }
+    },
+    staleTime: 0,
+    refetchOnMount: 'always',
   })
 }
 
