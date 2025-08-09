@@ -67,3 +67,38 @@ export function useBulkDeletePayments() {
     },
   })
 }
+
+export function useImportPayments() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+      return apiClient.post('/api/payments/import', formData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: paymentKeys.all })
+    },
+  })
+}
+
+export function useExportPayments() {
+  return useMutation({
+    mutationFn: ({ format, paymentIds, filters }: { 
+      format: 'csv' | 'excel' | 'pdf', 
+      paymentIds?: string[], 
+      filters?: string 
+    }) => {
+      const formData = new FormData()
+      formData.append('export_format', format)
+      if (paymentIds && paymentIds.length > 0) {
+        formData.append('payment_ids', JSON.stringify(paymentIds))
+      }
+      if (filters) {
+        formData.append('filters', filters)
+      }
+      return apiClient.post('/api/payments/export', formData)
+    },
+  })
+}

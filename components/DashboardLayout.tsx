@@ -34,6 +34,7 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
     // { icon: 'ri-user-star-line', label: 'Instructors', href: '/dashboard/admin/instructors' },
     // { icon: 'ri-calendar-line', label: 'Lessons', href: '/dashboard/admin/lessons' },
     { icon: 'ri-money-dollar-circle-line', label: 'Revenue', href: '/dashboard/admin/revenue' },
+    { icon: 'ri-bank-card-line', label: 'Payments', href: '/dashboard/admin/payments' },
     { icon: 'ri-settings-line', label: 'Settings', href: '/dashboard/admin/settings' }
   ];
 

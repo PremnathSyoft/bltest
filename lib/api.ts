@@ -87,11 +87,39 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' })
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+    const requestOptions: RequestInit = {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    })
+      ...options,
+    }
+
+    if (data) {
+      if (data instanceof FormData) {
+        // Handle FormData (for file uploads, etc.)
+        requestOptions.body = data
+        // Remove Content-Type header to let browser set it with boundary for FormData
+        requestOptions.headers = {
+          ...(this.getAuthToken() && { Authorization: `Bearer ${this.getAuthToken()}` }),
+          ...options?.headers,
+        }
+      } else {
+        // Handle JSON data
+        requestOptions.body = JSON.stringify(data)
+        requestOptions.headers = {
+          'Content-Type': 'application/json',
+          ...(this.getAuthToken() && { Authorization: `Bearer ${this.getAuthToken()}` }),
+          ...options?.headers,
+        }
+      }
+    } else {
+      requestOptions.headers = {
+        'Content-Type': 'application/json',
+        ...(this.getAuthToken() && { Authorization: `Bearer ${this.getAuthToken()}` }),
+        ...options?.headers,
+      }
+    }
+
+    return this.request<T>(endpoint, requestOptions)
   }
 
   async put<T>(endpoint: string, data?: any): Promise<T> {
