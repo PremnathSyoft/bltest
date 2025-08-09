@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../api'
+// Success/error toasts are handled globally in apiClient. Keep hook toasts minimal or contextual.
 
 // Types based on the API documentation
 export interface Student {
@@ -216,9 +217,17 @@ export const useImportStudents = () => {
       })
       
       if (!response.ok) {
-        throw new Error(`Import failed: ${response.status} ${response.statusText}`)
+        // Show error toast for any non-2xx
+        const message = `Import failed: ${response.status} ${response.statusText}`
+        try { (await import('../toast')).notifyToast(message, 'error') } catch {}
+        throw new Error(message)
       }
       
+      // Success toast (treat 200/201 as success for import)
+      const status = response.status
+      if (status === 200 || status === 201) {
+        try { (await import('../toast')).notifyToast('Import completed successfully', 'success') } catch {}
+      }
       return response.json()
     },
     onSuccess: () => {
@@ -261,7 +270,9 @@ export const useExportStudents = () => {
       })
       
       if (!response.ok) {
-        throw new Error(`Export failed: ${response.status} ${response.statusText}`)
+        const message = `Export failed: ${response.status} ${response.statusText}`
+        try { (await import('../toast')).notifyToast(message, 'error') } catch {}
+        throw new Error(message)
       }
       
       // Handle file download
@@ -275,6 +286,7 @@ export const useExportStudents = () => {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
+      try { (await import('../toast')).notifyToast('Export started', 'success') } catch {}
       return 'Export completed successfully'
     },
   })

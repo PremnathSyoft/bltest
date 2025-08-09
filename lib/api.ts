@@ -1,4 +1,5 @@
 // Base API configuration
+import { notifyToast } from './toast'
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://rtcblissdrive.onrender.com'
 
 // Generic API client
@@ -40,13 +41,46 @@ export class ApiClient {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('access_token')
           localStorage.removeItem('refresh_token')
-          window.location.href = '/login'
+          window.location.href = '/signin'
         }
       }
+      notifyToast(`Request failed: ${response.status} ${response.statusText}`, 'error')
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    return response.json()
+    // Success notifications based on method/status
+    try {
+      const method = (config.method || 'GET').toUpperCase()
+      const isGet = method === 'GET'
+      const isMutate = method === 'POST' || method === 'PUT' || method === 'PATCH'
+      const status = response.status
+
+      if ((isGet && status === 200) || (isMutate && (status === 200 || status === 201))) {
+        const successMessage = isGet
+          ? 'Loaded successfully'
+          : status === 201
+            ? 'Created successfully'
+            : 'Saved successfully'
+        notifyToast(successMessage, 'success')
+      }
+    } catch {
+      // ignore toast issues
+    }
+
+    // Gracefully handle empty responses (e.g., 204 No Content)
+    if (response.status === 204) {
+      return undefined as unknown as T
+    }
+    const rawText = await response.text()
+    if (!rawText) {
+      return undefined as unknown as T
+    }
+    try {
+      return JSON.parse(rawText) as T
+    } catch {
+      // If not JSON, return as-is string
+      return rawText as unknown as T
+    }
   }
 
   async get<T>(endpoint: string): Promise<T> {

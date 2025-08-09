@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { setToastNotifier } from '@/lib/toast'
 
 interface ToastProps {
   message: string
@@ -59,6 +60,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const removeToast = (id: number) => {
     setToasts(prev => prev.filter(toast => toast.id !== id))
   }
+
+  useEffect(() => {
+    setToastNotifier(showToast)
+    return () => setToastNotifier(() => {})
+  }, [])
 
   return (
     <ToastContext.Provider value={{ showToast }}>
