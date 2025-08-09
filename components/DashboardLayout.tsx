@@ -26,8 +26,8 @@ export default function DashboardLayout({ children, userType, userName }: Dashbo
   const adminNavItems = [
     { icon: 'ri-dashboard-line', label: 'Dashboard', href: '/dashboard/admin' },
     { icon: 'ri-user-line', label: 'Students', href: '/dashboard/admin/students' },
-    { icon: 'ri-user-star-line', label: 'Instructors', href: '/dashboard/admin/instructors' },
-    { icon: 'ri-calendar-line', label: 'Lessons', href: '/dashboard/admin/lessons' },
+    // { icon: 'ri-user-star-line', label: 'Instructors', href: '/dashboard/admin/instructors' },
+    // { icon: 'ri-calendar-line', label: 'Lessons', href: '/dashboard/admin/lessons' },
     { icon: 'ri-money-dollar-circle-line', label: 'Revenue', href: '/dashboard/admin/revenue' },
     { icon: 'ri-settings-line', label: 'Settings', href: '/dashboard/admin/settings' }
   ];

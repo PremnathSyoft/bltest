@@ -96,10 +96,10 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-        </div>
+          </div>
       </DashboardLayout>
     );
-  }
+    }
 
   return (
     <DashboardLayout userType="admin" userName={user?.first_name || 'Admin'}>
@@ -156,8 +156,8 @@ export default function AdminDashboard() {
                     ></div>
                   </div>
                 </div>
-              </div>
-              
+          </div>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
@@ -170,10 +170,10 @@ export default function AdminDashboard() {
                       className="bg-yellow-500 h-2 rounded-full" 
                       style={{ width: `${totalStudents > 0 ? (pendingStudents / totalStudents) * 100 : 0}%` }}
                     ></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
@@ -187,10 +187,10 @@ export default function AdminDashboard() {
                       style={{ width: `${totalStudents > 0 ? (rejectedStudents / totalStudents) * 100 : 0}%` }}
                     ></div>
                   </div>
+                        </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
           {/* Role Distribution */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
@@ -224,12 +224,12 @@ export default function AdminDashboard() {
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
                   <span className="text-gray-700">Super Admins</span>
-                </div>
+                        </div>
                 <span className="text-sm font-medium text-gray-900">{roleStats.superAdmins}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
+                </div>
 
         {/* Recent Students */}
         {recentStudents.length > 0 && (
@@ -262,9 +262,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
+                </div>
+              </div>
+            )}
 
         {/* Quick Actions */}
         <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
             <button className="flex flex-col items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                 <i className="ri-download-line text-2xl text-purple-600"></i>
-              </div>
+                </div>
               <span className="text-sm font-medium text-gray-700">Export Data</span>
             </button>
             
